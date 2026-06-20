@@ -467,7 +467,8 @@
         function renderEditImagePreview() {
             let html = '';
             editImagesTemp.forEach((img, index) => {
-                html += `<div class="image-preview-item"><img src="${img}" alt="图片"><button class="remove-btn" onclick="editImagesTemp.splice(${index},1);renderEditImagePreview();">×</button></div>`;
+                const src = typeof img === 'string' ? img : (img.url || img);
+                html += `<div class="image-preview-item"><img src="${src}" alt="图片"><button class="remove-btn" onclick="editImagesTemp.splice(${index},1);renderEditImagePreview();">×</button></div>`;
             });
             document.getElementById('editImagePreview').innerHTML = html;
         }
@@ -545,15 +546,16 @@
             let html = '';
             orders.forEach((order, idx) => {
                 const images = order.images || [];
+                const getImgUrl = (img) => typeof img === 'string' ? img : (img.url || '');
                 const imgsHtml = images.length > 0
-                    ? images.map(img => `<img src="${img}" onclick="openImagePreview('${img}')" alt="商品图片">`).join('')
+                    ? images.filter(img => getImgUrl(img)).map(img => `<img src="${getImgUrl(img)}" onclick="openImagePreview('${getImgUrl(img)}')" alt="商品图片">`).join('')
                     : '<span style="color:#475569;font-size:12px;">无图片</span>';
                 html += `
                 <div class="order-item">
                     <div class="order-header">
                         <div class="order-header-left">
                             <span style="color:#94a3b8;font-size:13px;">订单 #${idx + 1}</span>
-                            <span class="order-badge">${order.session_no || order.order_no || '-'}</span>
+                            <span class="order-badge">${order.order_no || '-'}</span>
                         </div>
                         <div class="order-actions">
                             <button class="btn btn-primary" onclick='openEditModal(${JSON.stringify(order).replace(/'/g,"&#39;")})'>✏️ 编辑</button>
@@ -693,7 +695,7 @@
             editingOrderIndex = order.id;
             document.getElementById('editOrderNo').value = order.order_no;
             document.getElementById('editOrderNote').value = order.note || '';
-            editImagesTemp = (order.images && order.images.length > 0) ? [...order.images] : [];
+            editImagesTemp = (order.images && order.images.length > 0) ? order.images.map(i => typeof i === 'string' ? i : i.url).filter(Boolean) : [];
             renderEditImagePreview();
             document.getElementById('editOrderModal').classList.add('show');
         }
@@ -711,7 +713,8 @@
             showLoading(true);
             let finalImages = [];
             for (const img of editImagesTemp) {
-                if (img.startsWith('data:')) {
+                const imgSrc = typeof img === 'string' ? img : (img.url || '');
+                if (imgSrc.startsWith('data:')) {
                     try {
                         const blob = dataURLtoBlob(img);
                         const file = new File([blob], 'product.jpg', { type: 'image/jpeg' });
@@ -734,11 +737,13 @@
         // ============================================================
         async function exportHTML() {
             if (!currentSession || orders.length === 0) { showToast('当前场次没有订单可导出','warning'); return; }
+            const getImgUrl = (img) => typeof img === 'string' ? img : (img.url || '');
             let rows = '';
             orders.forEach((o,i) => {
-                rows += `<tr><td>${i+1}</td><td>${o.order_no||'-'}</td><td>${o.note||'-'}</td><td>${o.created_at?new Date(o.created_at).toLocaleString('zh-CN'):'-'}</td></tr>`;
+                const imgs = (o.images || []).filter(img => getImgUrl(img)).map(img => `<img src="${getImgUrl(img)}" style="max-width:100px;max-height:100px;margin:2px;border-radius:4px;">`).join('') || '无';
+                rows += `<tr><td>${i+1}</td><td>${o.order_no||'-'}</td><td>${o.note||'-'}</td><td>${imgs}</td><td>${o.created_at?new Date(o.created_at).toLocaleString('zh-CN'):'-'}</td></tr>`;
             });
-            const html = `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>${currentSession.name} - 订单导出</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f5f5f5;}</style></head><body><h1>📦 ${currentSession.name}</h1><p>场次: ${currentSession.session_no} | 日期: ${currentSession.session_date} | 共 ${orders.length} 单 | 导出: ${new Date().toLocaleString('zh-CN')}</p><table><thead><tr><th>#</th><th>订单号</th><th>备注</th><th>时间</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
+            const html = `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>${currentSession.name} - 订单导出</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f5f5f5;}img{vertical-align:middle;}</style></head><body><h1>📦 ${currentSession.name}</h1><p>场次: ${currentSession.session_no} | 日期: ${currentSession.session_date} | 共 ${orders.length} 单 | 导出: ${new Date().toLocaleString('zh-CN')}</p><table><thead><tr><th>#</th><th>订单号</th><th>备注</th><th>商品图片</th><th>时间</th></tr></thead><tbody>${rows}</tbody></table><p style="color:#999;font-size:12px;">* 图片为网络链接，需联网查看</p></body></html>`;
             const blob = new Blob([html], { type:'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
