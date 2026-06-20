@@ -4,1580 +4,853 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>日区直播订单管理系统</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: {
+                        50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
+                        400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
+                        800: '#1e40af', 900: '#1e3a8a',
+                    },
+                },
+                animation: {
+                    'fade-in': 'fadeIn 0.3s ease-out',
+                    'slide-up': 'slideUp 0.3s ease-out',
+                    'slide-down': 'slideDown 0.3s ease-out',
+                },
+                keyframes: {
+                    fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                    slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                    slideDown: { '0%': { opacity: '0', transform: 'translateY(-20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                },
+            }
         }
-        
+    }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', 'Microsoft YaHei', Arial, sans-serif;
             background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #16213e 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #e2e8f0;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            text-align: center;
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .header h1 {
-            color: #fff;
-            font-size: 28px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .header p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 14px;
-        }
-        
-        .panel {
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 16px;
-            padding: 25px;
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-        
-        .panel-title {
-            color: #fff;
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .session-panel {
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 12px;
-            padding: 18px 22px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        
-        .session-info {
-            display: flex;
-            gap: 30px;
-        }
-        
-        .session-info div {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 13px;
-        }
-        
-        .session-info div span {
-            color: #fff;
-            font-weight: 600;
-            font-size: 16px;
-        }
-        
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        
-        .btn {
-            padding: 11px 22px;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            min-height: 42px;
-        }
-        
-        .btn-success {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-        }
-        
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
-        }
-        
-        .btn-success:active {
-            transform: translateY(0);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
-        }
-        
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-        }
-        
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45);
-        }
-        
-        .btn-danger:active {
-            transform: translateY(0);
-        }
-        
-        .btn-warning {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: #1f2937;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
-        }
-        
-        .btn-warning:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45);
-        }
-        
-        .btn-secondary {
-            background: rgba(71, 85, 105, 0.6);
-            color: #f1f5f9;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(71, 85, 105, 0.8);
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            color: #fff;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-        
-        .form-group input[type="text"],
-        .form-group input[type="date"],
-        .form-group input[type="time"],
-        .form-group select {
-            width: 100%;
-            padding: 13px 16px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            background: rgba(15, 23, 42, 0.8);
-            color: #f1f5f9;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            appearance: none;
-            outline: none;
-        }
-        
-        .form-group input[type="text"]:focus,
-        .form-group input[type="date"]:focus,
-        .form-group input[type="time"]:focus,
-        .form-group select:focus {
-            border-color: rgba(96, 165, 250, 0.6);
-            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
-            background: rgba(15, 23, 42, 0.95);
-        }
-        
-        .form-group input[type="text"]::placeholder,
-        .form-group input[type="date"]::placeholder,
-        .form-group input[type="time"]::placeholder {
-            color: rgba(148, 163, 184, 0.7);
-        }
-        
-        .form-group input[type="date"]::-webkit-calendar-picker-indicator,
-        .form-group input[type="time"]::-webkit-calendar-picker-indicator {
-            filter: invert(0.8);
-            cursor: pointer;
-            opacity: 0.8;
-        }
-        
-        .main-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-        
-        .order-list {
-            max-height: calc(100vh - 320px);
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-        
-        .order-list::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .order-list::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 3px;
-        }
-        
-        .order-list::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 3px;
-        }
-        
-        .order-item {
-            background: rgba(30, 41, 59, 0.7);
-            border-radius: 14px;
-            padding: 18px;
-            margin-bottom: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .order-item:hover {
-            transform: translateX(5px);
-            border-color: rgba(96, 165, 250, 0.4);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-        }
-        
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-        
-        .order-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .order-title span {
-            color: #f8fafc;
-            font-weight: 600;
-            font-size: 16px;
-        }
-        
-        .order-anchor {
-            color: #a5b4fc;
-            font-size: 12px;
-            padding: 3px 10px;
-            background: rgba(139, 92, 246, 0.2);
-            border-radius: 12px;
-            border: 1px solid rgba(139, 92, 246, 0.3);
-        }
-        
-        .order-info {
-            color: #cbd5e1;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        
-        .order-info span {
-            color: #94a3b8;
-        }
-
-        .order-note {
-            color: #f39c12;
-            margin-top: 4px;
-        }
-        
-        .order-images {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-        }
-        
-        .images-label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 12px;
-            margin-bottom: 8px;
-        }
-        
-        .images-preview {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .images-preview img {
-            width: 75px;
-            height: 75px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .images-preview img:hover {
-            transform: scale(1.05);
-            border-color: rgba(102, 126, 234, 0.5);
-        }
-        
-        .order-time {
-            margin-top: 10px;
-            color: rgba(255, 255, 255, 0.35);
-            font-size: 11px;
-        }
-        
-        .image-preview-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 10000;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-        }
-        
-        .image-preview-modal.show {
-            display: flex;
-        }
-        
-        .image-preview-modal img {
-            max-width: 90vw;
-            max-height: 90vh;
-            border-radius: 10px;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: rgba(255, 255, 255, 0.4);
-        }
-        
-        .empty-state .icon {
-            font-size: 56px;
-            margin-bottom: 20px;
-        }
-        
-        .empty-state h3 {
-            color: #fff;
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        
-        .empty-state p {
-            font-size: 14px;
-        }
-        
-        .search-bar {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .search-bar select {
-            flex: 1;
-            min-width: 300px;
-        }
-        
-        .image-upload-area {
-            position: relative;
-        }
-        
-        .image-upload-area input[type="file"] {
-            display: none;
-        }
-        
-        #imagePreview {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
-        
-        #imagePreview .preview-item {
-            position: relative;
-        }
-        
-        #imagePreview .preview-item img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        #imagePreview .preview-item .remove-btn {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 20px;
-            height: 20px;
-            background: #ef4444;
-            border-radius: 50%;
-            border: none;
-            color: #fff;
-            font-size: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        @media (max-width: 1024px) {
-            .main-layout {
-                grid-template-columns: 1fr;
-            }
-            
-            .order-list {
-                max-height: 500px;
-            }
-        }
+            min-height: 100vh; padding: 20px; color: #e2e8f0;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header { text-align: center; padding: 30px 20px; margin-bottom: 30px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.10) 100%);
+            border-radius: 24px; border: 1px solid rgba(99, 102, 241, 0.2);
+            backdrop-filter: blur(10px); }
+        .header h1 { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+        .header p { font-size: 14px; color: #94a3b8; }
+        .card { background: rgba(30, 41, 59, 0.8); border-radius: 16px; padding: 24px;
+            border: 1px solid rgba(148, 163, 184, 0.1); backdrop-filter: blur(10px); margin-bottom: 20px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer;
+            font-size: 14px; font-weight: 600; transition: all 0.2s; display: inline-flex;
+            align-items: center; gap: 6px; }
+        .btn:hover { transform: translateY(-1px); opacity: 0.9; }
+        .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
+        .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+        .btn-secondary { background: rgba(148, 163, 184, 0.15); color: #e2e8f0; border: 1px solid rgba(148, 163, 184, 0.2); }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+        .input-field { width: 100%; padding: 12px 16px; background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 10px; color: #e2e8f0;
+            font-size: 14px; transition: all 0.2s; }
+        .input-field:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+        label { display: block; font-size: 13px; font-weight: 600; color: #94a3b8; margin-bottom: 6px; }
+        .order-item { background: rgba(15, 23, 42, 0.6); border-radius: 12px; padding: 20px;
+            margin-bottom: 12px; border: 1px solid rgba(148, 163, 184, 0.08); transition: all 0.2s; }
+        .order-item:hover { border-color: rgba(99, 102, 241, 0.3); background: rgba(15, 23, 42, 0.8); }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center;
+            padding: 20px; backdrop-filter: blur(4px); }
+        .modal-overlay.show { display: flex; }
+        .modal-content { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 20px;
+            padding: 30px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+            border: 1px solid rgba(148, 163, 184, 0.15); animation: slideUp 0.3s ease-out; }
+        .modal-close { position: absolute; top: 15px; right: 15px; width: 32px; height: 32px;
+            border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: #fff;
+            font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .image-preview-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .image-preview-item { position: relative; width: 80px; height: 80px; border-radius: 8px;
+            overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.2); }
+        .image-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+        .image-preview-item .remove-btn { position: absolute; top: 2px; right: 2px; width: 20px;
+            height: 20px; border-radius: 50%; border: none; background: rgba(239, 68, 68, 0.9);
+            color: white; font-size: 12px; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; }
+        .order-images { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .order-images img { width: 60px; height: 60px; border-radius: 6px; object-fit: cover;
+            cursor: pointer; border: 1px solid rgba(148, 163, 184, 0.15); transition: transform 0.2s; }
+        .order-images img:hover { transform: scale(1.1); }
+        .tag { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12px;
+            font-weight: 600; }
+        .tag-active { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .tag-ended { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+        .stat-box { background: rgba(15, 23, 42, 0.4); border-radius: 12px; padding: 16px;
+            text-align: center; border: 1px solid rgba(148, 163, 184, 0.08); }
+        .stat-box .number { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-box .label { font-size: 12px; color: #64748b; margin-top: 4px; }
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex;
+            flex-direction: column; gap: 10px; }
+        .toast { padding: 14px 20px; border-radius: 12px; font-size: 14px; font-weight: 500;
+            animation: slideDown 0.3s ease-out; display: flex; align-items: center; gap: 10px;
+            min-width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .toast-success { background: linear-gradient(135deg, #065f46, #047857); color: #a7f3d0; border: 1px solid rgba(16,185,129,0.3); }
+        .toast-error { background: linear-gradient(135deg, #7f1d1d, #991b1b); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+        .toast-info { background: linear-gradient(135deg, #1e3a5f, #1e40af); color: #93c5fd; border: 1px solid rgba(59,130,246,0.3); }
+        .toast-warning { background: linear-gradient(135deg, #78350f, #92400e); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+        .image-preview-modal { display: none; position: fixed; top: 0; left: 0; width: 100%;
+            height: 100%; background: rgba(0,0,0,0.95); z-index: 100000; justify-content: center;
+            align-items: center; cursor: pointer; }
+        .image-preview-modal.show { display: flex; }
+        .image-preview-modal img { max-width: 90vw; max-height: 90vh; border-radius: 10px; }
+        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 99998; justify-content: center; align-items: center;
+            backdrop-filter: blur(2px); }
+        .loading-overlay.show { display: flex; }
+        .loading-spinner { width: 50px; height: 50px; border: 4px solid rgba(99,102,241,0.2);
+            border-top-color: #6366f1; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .session-select { background: rgba(15,23,42,0.8); border: 1px solid rgba(148,163,184,0.2);
+            color: #e2e8f0; border-radius: 10px; padding: 10px 14px; font-size: 14px; width: 100%; }
+        .session-select:focus { outline: none; border-color: #6366f1; }
+        .session-select option { background: #1e293b; color: #e2e8f0; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.2); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,0.4); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
     </style>
+    <!-- AiPexBase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/aipexbase-js/dist/aipexbase.umd.min.js"></script>
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <div class="header">
-            <h1>🇯🇵 日区直播订单管理系统</h1>
-            <p>专业的日区直播订单记录与管理工具</p>
+            <h1>📦 日区直播订单管理系统</h1>
+            <p>云数据库版 · 数据云端存储 · 多设备同步</p>
         </div>
-        
-        <div class="panel">
-            <div class="panel-title">🌅 日区直播订单记录</div>
-            
-            <!-- 场次信息区域 -->
-            <div class="session-panel">
-                <div class="session-info">
-                    <div><span style="color:#4CAF50;">当前场次:</span> <span id="sessionTitle">-</span></div>
-                    <div><span style="color:#667eea;">主播:</span> <span id="sessionAnchor">-</span></div>
-                    <div><span style="color:#10b981;">场次时间:</span> <span id="sessionTime">-</span></div>
-                </div>
+
+        <!-- Stats -->
+        <div class="grid-2 mb-6">
+            <div class="stat-box">
+                <div class="number" id="statSessions">0</div>
+                <div class="label">场次数</div>
             </div>
-            
-            <!-- 场次操作按钮和搜索区域 -->
-            <div class="btn-group" style="margin-bottom: 20px;">
-                <button class="btn btn-primary" onclick="openSessionModal()">📅 创建/更换场次</button>
-                <button class="btn btn-warning" onclick="endSession()">🔚 直播结束</button>
-                <button class="btn btn-secondary" onclick="exportHTML()">🌐 HTML导出</button>
+            <div class="stat-box">
+                <div class="number" id="statOrders">0</div>
+                <div class="label">订单数</div>
+            </div>
+        </div>
+
+        <!-- Session Bar -->
+        <div class="card">
+            <div class="flex flex-wrap items-center gap-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-gray-400">当前场次:</span>
+                    <span id="currentSessionDisplay" class="text-sm font-semibold text-green-400">-</span>
+                    <span id="sessionStatusTag" class="tag tag-ended hidden">已结束</span>
+                </div>
+                <div class="flex-1"></div>
+                <button class="btn btn-primary" onclick="openSessionModal()">📅 创建/切换场次</button>
+                <button class="btn btn-success" onclick="endSession()">🔚 结束场次</button>
+                <button class="btn btn-warning" onclick="exportHTML()">🌐 HTML导出</button>
                 <button class="btn btn-danger" onclick="deleteSession()">🗑️ 删除场次</button>
-                <button class="btn btn-danger" onclick="clearOrders()">🗑️ 清空订单</button>
-                <button class="btn btn-info" onclick="openHelpModal()">❓ 使用说明</button>
-                
-                <div style="flex: 1;"></div>
-                
-                <select id="sessionSelect" style="padding: 11px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(15,23,42,0.8); color: #f1f5f9; font-size: 14px; min-width: 280px; outline: none; appearance: none; cursor: pointer;">
-                    <option value="" style="background: #1e293b; color: #94a3b8;">选择场次查询</option>
+            </div>
+            <div>
+                <label>📋 查询历史场次</label>
+                <select id="sessionSelect" class="session-select" onchange="onSessionSelect()">
+                    <option value="">-- 选择场次查询 --</option>
                 </select>
-                <button class="btn btn-success" onclick="searchOrders()">🔍 查询订单</button>
-            </div>
-            
-            <!-- 左右分栏布局 -->
-            <div class="main-layout">
-                <!-- 左侧：添加订单表单 -->
-                <div class="panel" style="padding: 20px;">
-                    <div style="color: #fff; font-size: 18px; font-weight: 600; margin-bottom: 20px;">➕ 添加订单</div>
-                    
-                    <div class="form-group">
-                        <label for="customerOrderNo">订单号</label>
-                        <input type="text" id="customerOrderNo" placeholder="输入订单号">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="orderNote">备注信息</label>
-                        <input type="text" id="orderNote" placeholder="输入备注信息（选填）">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>商品图片</label>
-                        <div class="btn-group" style="margin-bottom: 15px;">
-                            <button class="btn btn-success" onclick="takePhoto()">📷 拍照</button>
-                            <button class="btn btn-primary" onclick="document.getElementById('imageFile').click()">📁 上传图片</button>
-                            <button class="btn btn-success" onclick="saveOrder()">💾 保存订单</button>
-                            <button class="btn btn-primary" onclick="saveOrderAndNext()">➡️ 下一个订单</button>
-                        </div>
-                        <input type="file" id="imageFile" accept="image/*" multiple onchange="handleImageUpload(event)">
-                        <div id="imagePreview"></div>
-                    </div>
-                </div>
-                
-                <!-- 右侧：订单列表 -->
-                <div class="panel" style="padding: 20px;">
-                    <div style="color: #fff; font-size: 16px; font-weight: 600; margin-bottom: 15px;">📋 订单列表</div>
-                    <div class="order-list" id="orderList">
-                        <div class="empty-state">
-                            <div class="icon">📋</div>
-                            <h3>暂无订单记录</h3>
-                            <p>点击上方"创建/更换场次"按钮开始记录</p>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
-    </div>
-    
-    <!-- 图片预览模态框 -->
-    <div class="image-preview-modal" onclick="closeImagePreview()">
-        <img id="previewImage" src="">
-    </div>
-    
-    <!-- 编辑订单模态框 -->
-    <div id="editOrderModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10002; justify-content: center; align-items: center;">
-        <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; position: relative;">
-            <button onclick="closeEditModal()" style="position: absolute; top: 15px; right: 15px; width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
-            
-            <h3 style="color: #fff; font-size: 20px; margin-bottom: 25px; text-align: center;">✏️ 编辑订单</h3>
-            
-            <input type="hidden" id="editOrderIndex" value="-1">
-            
-            <div class="form-group">
-                <label>订单号</label>
-                <input type="text" id="editOrderNo" placeholder="输入订单号" required>
+
+        <!-- Order Form -->
+        <div class="card">
+            <h3 class="text-lg font-semibold mb-4">📝 录入订单</h3>
+            <div class="grid-2">
+                <div>
+                    <label><span class="text-red-500">*</span> 订单号</label>
+                    <input type="text" id="orderNo" class="input-field" placeholder="输入订单号" required>
+                </div>
+                <div>
+                    <label>备注信息</label>
+                    <input type="text" id="orderNote" class="input-field" placeholder="输入备注信息（选填）">
+                </div>
             </div>
-            
-            <div class="form-group">
-                <label>备注信息</label>
-                <input type="text" id="editOrderNote" placeholder="输入备注信息（选填）">
-            </div>
-            
-            <div class="form-group">
+            <div class="mt-4">
                 <label>商品图片</label>
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <button class="btn btn-success" onclick="editTakePhoto()">📷 拍照</button>
-                    <button class="btn btn-primary" onclick="triggerEditImageUpload()">📁 上传图片</button>
+                <div class="flex gap-3 items-start flex-wrap">
+                    <button class="btn btn-primary" onclick="document.getElementById('imageFile').click()">📁 上传图片</button>
+                    <input type="file" id="imageFile" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)">
+                    <button class="btn btn-success" onclick="saveOrder()">💾 保存订单</button>
+                    <button class="btn btn-primary" onclick="saveOrderAndNext()">➡️ 下一个订单</button>
                 </div>
-                <input type="file" id="editImageFile" accept="image/*" style="display:none;" onchange="handleEditImageUpload()">
-                <div id="editImagePreview" style="display: flex; flex-wrap: wrap; gap: 10px; max-height: 200px; overflow-y: auto;"></div>
-            </div>
-            
-            <div style="display: flex; gap: 15px; margin-top: 25px;">
-                <button onclick="closeEditModal()" class="btn btn-danger" style="flex: 1;">✖️ 取消</button>
-                <button onclick="saveEditOrder()" class="btn btn-success" style="flex: 1;">💾 保存修改</button>
+                <div id="imagePreview" class="image-preview-container"></div>
             </div>
         </div>
-    </div>
-    
-    <!-- 拍照预览模态框 -->
-    <div id="cameraModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10005; justify-content: center; align-items: center;">
-        <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 20px; border-radius: 15px; max-width: 640px; width: 90%; position: relative;">
-            <button onclick="closeCameraModal()" style="position: absolute; top: 15px; right: 15px; width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
-            
-            <h3 style="color: #fff; font-size: 18px; margin-bottom: 15px; text-align: center;">📷 拍照预览</h3>
-            
-            <video id="cameraPreview" style="width: 100%; max-width: 600px; border-radius: 10px; background: #000;" autoplay playsinline></video>
-            
-            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
-                <button onclick="closeCameraModal()" class="btn btn-danger">✖️ 取消</button>
-                <button onclick="captureFromPreview()" class="btn btn-success">📸 拍照</button>
+
+        <!-- Order List -->
+        <div class="card">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">📋 订单列表</h3>
+                <span id="orderCount" class="text-sm text-gray-400">共 0 单</span>
             </div>
-        </div>
-    </div>
-    
-    <!-- 使用说明模态框 -->
-    <div id="helpModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10003; justify-content: center; align-items: center; overflow-y: auto;">
-        <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 30px; border-radius: 15px; max-width: 800px; width: 90%; max-height: 85vh; overflow-y: auto; position: relative; margin: 20px;">
-            <button onclick="closeHelpModal()" style="position: absolute; top: 15px; right: 15px; width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
-            
-            <h2 style="color: #fff; font-size: 24px; margin-bottom: 25px; text-align: center;">📖 JP日区直播订单管理系统 - 使用说明</h2>
-            
-            <div style="color: #e2e8f0; line-height: 1.8;">
-                
-                <h3 style="color: #60a5fa; margin-top: 20px; margin-bottom: 15px;">一、场次管理</h3>
-                <ul style="margin-left: 20px; margin-bottom: 15px;">
-                    <li><strong>📅 创建/更换场次</strong>：创建新的直播场次，输入场次名称、日期、时间和主播信息。创建后即可开始录入订单。</li>
-                    <li><strong>🔚 直播结束</strong>：结束当前场次，清空订单录入界面（订单数据已自动保存）。</li>
-                    <li><strong>🗑️ 删除场次</strong>：删除当前场次及其所有订单，此操作不可撤销。</li>
-                    <li><strong>🗑️ 清空订单</strong>：清空当前场次的所有订单，但保留场次信息。</li>
-                    <li><strong>🌐 HTML导出</strong>：导出当前场次的所有订单为HTML文件，包含高清商品图片和订单号条形码，便于打印和扫码查询。</li>
-                    <li><strong>❓ 使用说明</strong>：查看本使用说明。</li>
-                </ul>
-                
-                <h3 style="color: #60a5fa; margin-top: 20px; margin-bottom: 15px;">二、订单录入</h3>
-                <ul style="margin-left: 20px; margin-bottom: 15px;">
-                    <li><strong>订单号</strong>：输入客户订单号，支持字母、数字和特殊字符（如 A123、JP-2024-001 等）。</li>
-                    <li><strong>备注信息</strong>：可选，用于记录额外信息（如客户备注、特殊要求等）。</li>
-                    <li><strong>📷 拍照</strong>：点击后弹出摄像头预览窗口，调整角度后点击"拍照"完成拍摄。首次使用需授权摄像头。</li>
-                    <li><strong>📁 上传图片</strong>：从本地选择图片上传，支持多张图片。</li>
-                    <li><strong>💾 保存订单</strong>：保存当前订单到当前场次。</li>
-                    <li><strong>➡️ 下一个订单</strong>：保存当前订单并自动清空表单，方便快速连续录入下一单。</li>
-                </ul>
-                
-                <h3 style="color: #60a5fa; margin-top: 20px; margin-bottom: 15px;">三、订单列表操作</h3>
-                <ul style="margin-left: 20px; margin-bottom: 15px;">
-                    <li><strong>✏️ 编辑</strong>：点击后打开编辑窗口，可修改订单号、备注、商品图片。编辑保存后订单创建时间不变。</li>
-                    <li><strong>🗑️ 删除</strong>：删除单个订单，此操作不可撤销。</li>
-                    <li><strong>📋 订单排序</strong>：最新保存的订单排在最前面（订单编号最大），按创建时间倒序排列。</li>
-                    <li><strong>🔍 订单编号</strong>：根据订单创建时间自动分配，编辑订单不会改变订单编号。</li>
-                </ul>
-                
-                <h3 style="color: #60a5fa; margin-top: 20px; margin-bottom: 15px;">四、订单查询</h3>
-                <ul style="margin-left: 20px; margin-bottom: 15px;">
-                    <li><strong>选择场次</strong>：从下拉菜单选择要查询的历史场次。</li>
-                    <li><strong>🔍 查询订单</strong>：加载选中场次的所有订单进行查看或编辑。</li>
-                    <li><strong>场次隔离</strong>：每个场次的订单数据相互独立，查询、编辑、删除操作只影响当前场次。</li>
-                </ul>
-                
-                <h3 style="color: #60a5fa; margin-top: 20px; margin-bottom: 15px;">五、HTML导出功能</h3>
-                <ul style="margin-left: 20px; margin-bottom: 15px;">
-                    <li><strong>导出版式</strong>：生成独立的HTML文件，可直接在浏览器打开或打印。</li>
-                    <li><strong>高清图片</strong>：导出图片最大尺寸400px，保证清晰度。</li>
-                    <li><strong>条形码</strong>：每个订单下方包含订单号条形码（Code 128格式），可通过扫码枪扫描查询。</li>
-                    <li><strong>订单顺序</strong>：导出的订单顺序与页面显示完全一致（最新在前）。</li>
-                </ul>
-                
-                <h3 style="color: #60a5fa; margin-top: 20px; margin-bottom: 15px;">六、数据安全</h3>
-                <ul style="margin-left: 20px; margin-bottom: 15px;">
-                    <li><strong>自动保存</strong>：页面关闭或刷新时自动保存所有订单数据。</li>
-                    <li><strong>场次隔离</strong>：不同场次的订单数据相互独立，修改一个场次不会影响其他场次。</li>
-                    <li><strong>订单保护</strong>：编辑订单时保留原始创建时间和订单编号。</li>
-                </ul>
-                
-                <h3 style="color: #60a5fa; margin-top: 20px; margin-bottom: 15px;">七、注意事项</h3>
-                <ul style="margin-left: 20px; margin-bottom: 15px;">
-                    <li>首次拍照需要授权摄像头权限，授权后后续拍照无需重复授权。</li>
-                    <li>订单号重复时会提示确认，确认后会覆盖原有订单（保留最新修改）。</li>
-                    <li>删除场次会同时删除该场次的所有订单，请谨慎操作。</li>
-                    <li>建议定期使用HTML导出功能备份订单数据。</li>
-                    <li>条形码支持所有可打印ASCII字符，方便扫码枪识别。</li>
-                </ul>
-                
-            </div>
-            
-            <button onclick="closeHelpModal()" class="btn btn-primary" style="display: block; margin: 20px auto 0; padding: 12px 40px;">知道了</button>
-        </div>
-    </div>
-    
-    <!-- 场次创建模态框 -->
-    <div id="sessionModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center;">
-        <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 30px; border-radius: 15px; width: 450px; border: 1px solid rgba(255,255,255,0.1); position: relative;">
-            <!-- 关闭按钮 -->
-            <button onclick="closeSessionModal()" style="position: absolute; top: 15px; right: 15px; width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
-            
-            <h3 style="color: #fff; font-size: 20px; margin-bottom: 25px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px;">📅 创建日区直播场次</h3>
-            
-            <div class="form-group">
-                <label for="sessionTitle">直播标题</label>
-                <input type="text" id="sessionTitleInput" placeholder="输入直播标题（可选）">
-            </div>
-            
-            <div class="form-group">
-                <label for="sessionDate">直播日期</label>
-                <input type="date" id="sessionDate">
-            </div>
-            
-            <div class="form-group">
-                <label for="sessionTime">直播时间</label>
-                <input type="time" id="sessionTimeInput">
-            </div>
-            
-            <div class="form-group">
-                <label for="anchorName">主播名字</label>
-                <input type="text" id="anchorName" placeholder="输入主播名字">
-            </div>
-            
-            <div class="btn-group" style="justify-content: center; margin-top: 25px; gap: 15px;">
-                <button class="btn btn-danger" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);" onclick="closeSessionModal()">取消</button>
-                <button class="btn btn-success" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" onclick="createSession()">创建场次</button>
+            <div id="orderList" class="space-y-3">
+                <div class="text-center text-gray-500 py-10">暂无订单数据</div>
             </div>
         </div>
     </div>
 
+    <!-- Session Modal -->
+    <div id="sessionModal" class="modal-overlay">
+        <div class="modal-content relative">
+            <button onclick="closeSessionModal()" class="modal-close">×</button>
+            <h3 class="text-xl font-bold text-white mb-6">📅 创建直播场次</h3>
+            <div class="space-y-4">
+                <div>
+                    <label><span class="text-red-500">*</span> 场次名称</label>
+                    <input type="text" id="sessionName" class="input-field" placeholder="例如: 日区6.21晚场" required>
+                </div>
+                <div>
+                    <label><span class="text-red-500">*</span> 直播日期</label>
+                    <input type="date" id="sessionDate" class="input-field" required>
+                </div>
+                <div>
+                    <label>直播时间</label>
+                    <input type="text" id="sessionTime" class="input-field" placeholder="例如: 19:00-22:00">
+                </div>
+                <div>
+                    <label>主播信息</label>
+                    <input type="text" id="sessionAnchor" class="input-field" placeholder="选填">
+                </div>
+                <button class="btn btn-success w-full justify-center" onclick="createSession()">创建场次</button>
+            </div>
+            <hr class="my-6 border-gray-700">
+            <h4 class="text-base font-semibold text-white mb-4">🔄 切换已有场次</h4>
+            <select id="switchSessionSelect" class="session-select mb-4" onchange="onSwitchSession()">
+                <option value="">-- 选择场次 --</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Edit Order Modal -->
+    <div id="editOrderModal" class="modal-overlay">
+        <div class="modal-content relative">
+            <button onclick="closeEditModal()" class="modal-close">×</button>
+            <h3 class="text-xl font-bold text-white mb-6">✏️ 编辑订单</h3>
+            <div class="space-y-4">
+                <div>
+                    <label><span class="text-red-500">*</span> 订单号</label>
+                    <input type="text" id="editOrderNo" class="input-field" required>
+                </div>
+                <div>
+                    <label>备注信息</label>
+                    <input type="text" id="editOrderNote" class="input-field">
+                </div>
+                <div>
+                    <label>商品图片</label>
+                    <div class="flex gap-3 items-center">
+                        <button class="btn btn-primary" onclick="document.getElementById('editImageFile').click()">📁 上传图片</button>
+                        <input type="file" id="editImageFile" accept="image/*" multiple class="hidden" onchange="handleEditImageUpload(event)">
+                    </div>
+                    <div id="editImagePreview" class="image-preview-container"></div>
+                </div>
+                <button class="btn btn-success w-full justify-center" onclick="saveEditOrder()">💾 保存修改</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div id="imagePreviewModal" class="image-preview-modal" onclick="this.classList.remove('show')">
+        <img id="previewImageFull" src="" alt="预览">
+    </div>
+
+    <!-- Loading -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast-container"></div>
+
     <script>
-        let orders = [];
-        let currentSession = null;
-        let editingImages = [];
-        let dailySessions = [];
-        let cameraStream = null;  // 缓存摄像头流
-        
-        // 初始化加载数据
-        function init() {
-            loadSessions();
-            loadOrders();
-            updateSessionSelect();
-            
-            // 添加页面关闭/刷新时的自动保存
-            window.addEventListener('beforeunload', function(e) {
-                // 自动保存当前场次的订单
-                if (currentSession && orders.length > 0) {
-                    saveOrders();
-                }
-                // 自动保存场次信息
-                saveSessions();
+        // ============================================================
+        // 初始化 AiPexBase 客户端
+        // ============================================================
+        const baseUrl = 'https://baas.kuafuai.net/baas-api';
+        const apiKey = 'baas_jTsw5yWU';
+        const client = aipexbase.createClient({ baseUrl, apiKey });
+
+        // ============================================================
+        // 状态
+        // ============================================================
+        let currentSession = null;          // 当前选中的场次
+        let allSessions = [];               // 所有场次
+        let orders = [];                    // 当前订单列表
+        let editingImages = [];             // 新增时的临时图片（base64待上传）
+        let editImagesTemp = [];            // 编辑时的临时图片
+        let editingOrderIndex = null;       // 编辑中的订单索引
+        const UPLOAD_URL = baseUrl + '/common/upload';
+
+        // ============================================================
+        // Toast
+        // ============================================================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+            toast.innerHTML = `${icons[type] || 'ℹ️'} ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').classList.toggle('show', show);
+        }
+
+        // ============================================================
+        // 图片上传工具
+        // ============================================================
+        async function uploadFile(file) {
+            const token = localStorage.getItem('baas_token');
+            const formData = new FormData();
+            formData.append('file', file);
+            const response = await fetch(UPLOAD_URL, {
+                method: 'POST',
+                headers: {
+                    'Authorization': token ? `Bearer ${token}` : '',
+                    'CODE_FLYING': apiKey
+                },
+                body: formData
             });
-        }
-        
-        // 创建场次
-        function openSessionModal() {
-            document.getElementById('sessionModal').style.display = 'flex';
-            document.getElementById('sessionTitleInput').value = '';
-            
-            // 设置默认日期为今天
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('sessionDate').value = today;
-            
-            // 设置默认时间为空
-            document.getElementById('sessionTimeInput').value = '';
-            document.getElementById('anchorName').value = '';
-        }
-        
-        function closeSessionModal() {
-            document.getElementById('sessionModal').style.display = 'none';
-        }
-        
-        function createSession() {
-            const title = document.getElementById('sessionTitleInput').value.trim();
-            const sessionDate = document.getElementById('sessionDate').value;
-            const sessionTime = document.getElementById('sessionTimeInput').value;
-            const anchorName = document.getElementById('anchorName').value.trim();
-            
-            if (!sessionDate) {
-                alert('请选择直播日期！');
-                return;
+            const result = await response.json();
+            if (result.success && result.data) {
+                return result.data.url;
             }
-            if (!sessionTime) {
-                alert('请选择直播时间！');
-                return;
+            throw new Error(result.message || '上传失败');
+        }
+
+        // ============================================================
+        // 数据操作（云端）
+        // ============================================================
+        async function loadSessions() {
+            const res = await client.db.from('sessions').list()
+                .order('created_at', 'desc');
+            if (res.success) {
+                allSessions = res.data || [];
+                renderSessionSelect();
+                renderSwitchSelect();
+                updateStats();
             }
-            if (!anchorName) {
-                alert('请输入主播名字！');
-                return;
+        }
+
+        async function loadOrders(sessionId) {
+            if (!sessionId) { orders = []; renderOrders(); return; }
+            const res = await client.db.from('orders').list()
+                .eq('session_id', sessionId)
+                .order('created_at', 'desc');
+            if (res.success) {
+                orders = res.data || [];
+            } else {
+                orders = [];
             }
-            
-            // 生成场次编号（日期+时间+随机数）
-            const datePart = sessionDate.replace(/-/g, '');
-            const timePart = sessionTime.replace(/:/g, '');
-            const sessionNo = `${datePart}${timePart}`;
-            
+            renderOrders();
+            updateStats();
+        }
+
+        async function createSession() {
+            const name = document.getElementById('sessionName').value.trim();
+            const date = document.getElementById('sessionDate').value;
+            const time = document.getElementById('sessionTime').value.trim();
+            const anchor = document.getElementById('sessionAnchor').value.trim();
+            if (!name) { showToast('请输入场次名称', 'error'); return; }
+            if (!date) { showToast('请选择直播日期', 'error'); return; }
+
+            const sessionNo = 'S' + date.replace(/-/g, '') + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+            const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+            const res = await client.db.from('sessions').insert()
+                .values({
+                    name: name,
+                    session_date: date,
+                    session_time: time || '',
+                    anchor: anchor || '',
+                    session_no: sessionNo,
+                    status: 'active',
+                    created_at: now
+                });
+            if (!res.success) { showToast('创建场次失败: ' + (res.message || ''), 'error'); return; }
+
+            // 新创建的场次 id 在 res.data 中
+            const newId = res.data;
             currentSession = {
-                id: Date.now(),
-                sessionNo: sessionNo,
-                title: title || `直播_${sessionNo}`,
-                anchor: anchorName,
-                date: formatDate(sessionDate),
-                time: sessionTime,
-                createdAt: new Date().toISOString()
+                id: newId,
+                name: name,
+                session_date: date,
+                session_time: time,
+                anchor: anchor,
+                session_no: sessionNo,
+                status: 'active',
+                created_at: now
             };
-            
-            dailySessions.push(currentSession);
-            saveSessions();
-            updateSessionSelect();
-            
-            document.getElementById('sessionTitle').textContent = currentSession.title;
-            document.getElementById('sessionAnchor').textContent = anchorName;
-            document.getElementById('sessionTime').textContent = currentSession.date + ' ' + currentSession.time;
-            
-            // 加载该场次的订单
-            loadOrdersForSession();
-            
+
+            showToast(`场次 "${name}" 创建成功 🎉`);
             closeSessionModal();
+            await loadSessions();
+            await loadOrders(currentSession.id);
+            updateCurrentSessionDisplay();
+            document.getElementById('sessionSelect').value = '';
+
+            // 清空表单
+            document.getElementById('sessionName').value = '';
+            document.getElementById('sessionDate').value = '';
+            document.getElementById('sessionTime').value = '';
+            document.getElementById('sessionAnchor').value = '';
         }
-        
-        function formatDate(dateStr) {
-            const date = new Date(dateStr);
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}/${month}/${day}`;
+
+        async function endSession() {
+            if (!currentSession) { showToast('当前没有进行中的场次', 'warning'); return; }
+            if (currentSession.status !== 'active') { showToast('该场次已结束', 'info'); return; }
+            if (!confirm(`确定要结束场次 "${currentSession.name}" 吗？`)) return;
+
+            const res = await client.db.from('sessions').update()
+                .set({ status: 'ended' })
+                .eq('id', currentSession.id);
+            if (!res.success) { showToast('操作失败', 'error'); return; }
+
+            currentSession.status = 'ended';
+            showToast('场次已结束');
+            updateCurrentSessionDisplay();
+            await loadSessions();
         }
-        
-        // 结束场次
-        function endSession() {
-            if (!currentSession) {
-                alert('当前没有进行中的场次！');
-                return;
-            }
-            
-            if (confirm(`确定要结束场次 ${currentSession.sessionNo} 吗？`)) {
-                saveOrders();
-                currentSession = null;
-                orders = [];
-                
-                document.getElementById('sessionTitle').textContent = '-';
-                document.getElementById('sessionAnchor').textContent = '-';
-                document.getElementById('sessionTime').textContent = '-';
-                renderOrders();
-            }
+
+        async function deleteSession() {
+            if (!currentSession) { showToast('当前没有场次', 'warning'); return; }
+            if (!confirm(`⚠️ 确定要删除场次 "${currentSession.name}" 及其所有订单吗？\n\n此操作无法撤销！`)) return;
+
+            showLoading(true);
+            // 先删除该场次的所有订单
+            const delOrders = await client.db.from('orders').delete()
+                .eq('session_id', currentSession.id);
+            // 删除场次
+            const delSession = await client.db.from('sessions').delete()
+                .eq('id', currentSession.id);
+            showLoading(false);
+
+            if (!delSession.success) { showToast('删除失败', 'error'); return; }
+
+            showToast('场次已删除');
+            currentSession = null;
+            orders = [];
+            updateCurrentSessionDisplay();
+            renderOrders();
+            await loadSessions();
+            updateStats();
+            document.getElementById('sessionSelect').value = '';
         }
-        
-        // 删除场次
-        function deleteSession() {
-            if (!currentSession) {
-                alert('当前没有场次！');
-                return;
-            }
-            
-            if (confirm(`确定要删除场次 ${currentSession.sessionNo} 及其所有订单吗？\n\n此操作无法撤销！`)) {
-                // 删除场次
-                const index = dailySessions.findIndex(s => s.id === currentSession.id);
-                if (index >= 0) {
-                    dailySessions.splice(index, 1);
-                    saveSessions();
-                }
-                
-                // 删除当前场次的订单，但保留其他场次的订单
-                const saved = localStorage.getItem('jpOrders');
-                let allOrders = [];
-                if (saved) {
-                    allOrders = JSON.parse(saved);
-                }
-                // 过滤掉当前场次的订单
-                allOrders = allOrders.filter(o => o.sessionId !== currentSession.id);
-                localStorage.setItem('jpOrders', JSON.stringify(allOrders));
-                
-                currentSession = null;
-                orders = [];
-                
-                document.getElementById('sessionTitle').textContent = '-';
-                document.getElementById('sessionAnchor').textContent = '-';
-                document.getElementById('sessionTime').textContent = '-';
-                updateSessionSelect();
-                renderOrders();
-                
-                alert('场次已删除！');
-            }
-        }
-        
-        // 清空订单
-        function clearOrders() {
-            if (!currentSession) {
-                alert('请先选择一个场次！');
-                return;
-            }
-            
-            if (orders.length === 0) {
-                alert('当前场次暂无订单记录！');
-                return;
-            }
-            
-            if (confirm(`确定要清空当前场次的所有 ${orders.length} 个订单吗？`)) {
-                orders = [];
-                saveOrders();
-                renderOrders();
-                alert('订单已清空！');
-            }
-        }
-        
-        // 搜索订单
-        function searchOrders() {
-            const selectedSessionId = document.getElementById('sessionSelect').value;
-            if (!selectedSessionId) return;
-            
-            const session = dailySessions.find(s => s.id == selectedSessionId);
-            if (session) {
-                currentSession = session;
-                document.getElementById('sessionTitle').textContent = session.sessionNo;
-                document.getElementById('sessionAnchor').textContent = session.anchor;
-                document.getElementById('sessionTime').textContent = session.date + ' ' + session.time;
-                
-                loadOrdersForSession();
-            }
-        }
-        
-        // 保存订单
-        function saveOrder() {
-            if (!currentSession) {
-                alert('请先创建直播场次！');
-                return;
-            }
-            
-            const customerOrderNo = document.getElementById('customerOrderNo').value.trim();
+
+        async function saveOrder() {
+            if (!currentSession) { showToast('请先创建或选择一个场次', 'warning'); return; }
+            const orderNo = document.getElementById('orderNo').value.trim();
             const note = document.getElementById('orderNote').value.trim();
-            
-            if (!customerOrderNo) {
-                alert('请输入订单号！');
-                return;
-            }
-            
-            // 检查重复订单号
-            const existingIndex = orders.findIndex(order => 
-                order.customerOrderNo === customerOrderNo && 
-                order.sessionId === currentSession.id
-            );
-            
-            if (existingIndex >= 0) {
-                if (!confirm(`⚠️ 订单号 "${customerOrderNo}" 已存在！\n\n是否覆盖原有订单？`)) {
-                    renderOrders();
+            if (!orderNo) { showToast('请输入订单号', 'error'); return; }
+
+            showLoading(true);
+            // 上传图片
+            let imageUrls = [];
+            for (const img of editingImages) {
+                try {
+                    if (img.startsWith('data:')) {
+                        const blob = dataURLtoBlob(img);
+                        const file = new File([blob], 'product.jpg', { type: 'image/jpeg' });
+                        const url = await uploadFile(file);
+                        imageUrls.push(url);
+                    } else {
+                        imageUrls.push(img);
+                    }
+                } catch (e) {
+                    showToast('图片上传失败: ' + e.message, 'error');
+                    showLoading(false);
                     return;
                 }
-                orders.splice(existingIndex, 1);
             }
-            
-            const order = {
-                id: Date.now(),
-                customerOrderNo: customerOrderNo,
-                note: note,
-                images: [...editingImages],
-                sessionId: currentSession.id,
-                sessionNo: currentSession.sessionNo,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            };
-            
-            orders.unshift(order);
-            saveOrders();
-            renderOrders();
-            clearForm();
-        }
-        
-        // 保存订单并下一个
-        function saveOrderAndNext() {
-            saveOrder();
-        }
-        
-        // 清空表单
-        function clearForm() {
-            document.getElementById('customerOrderNo').value = '';
-            document.getElementById('orderNote').value = '';
+
+            const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            const res = await client.db.from('orders').insert()
+                .values({
+                    order_no: orderNo,
+                    note: note || '',
+                    images: imageUrls,
+                    session_id: currentSession.id,
+                    created_at: now
+                });
+            showLoading(false);
+
+            if (!res.success) { showToast('保存失败: ' + (res.message || ''), 'error'); return; }
+
+            showToast('订单保存成功 ✅');
             editingImages = [];
-            document.getElementById('imagePreview').innerHTML = '';
-            document.getElementById('customerOrderNo').focus();
+            renderImagePreview();
+            document.getElementById('orderNo').value = '';
+            document.getElementById('orderNote').value = '';
+            await loadOrders(currentSession.id);
         }
-        
-        // 删除订单
-        function deleteOrder(index) {
-            if (confirm('确定要删除这个订单吗？')) {
-                orders.splice(index, 1);
-                saveOrders();
-                renderOrders();
-            }
+
+        async function saveOrderAndNext() {
+            await saveOrder();
+            document.getElementById('orderNo').focus();
         }
-        
-        // 渲染订单列表
-        function renderOrders() {
-            const container = document.getElementById('orderList');
-            
-            if (orders.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📋</div>
-                        <h3>当前场次暂无订单记录</h3>
-                        <p>点击"添加订单"开始记录</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // 按创建时间正序排序，用于计算订单编号
-            const sortedByCreation = [...orders].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-            
-            let html = '';
-            // 倒序遍历显示（最新的在最上面）
-            sortedByCreation.reverse().forEach((order, reverseIndex) => {
-                const imageCount = order.images ? order.images.length : 0;
-                const orderNumber = sortedByCreation.length - reverseIndex;
-                const orderIndex = orders.indexOf(order);
-                
-                html += `
-                    <div class="order-item">
-                        <div class="order-header">
-                            <div class="order-title">
-                                <span>订单 #${orderNumber}</span>
-                                <span class="order-anchor">${currentSession ? currentSession.anchor : '未知主播'}</span>
-                            </div>
-                            <div style="display: flex; gap: 6px;">
-                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;" onclick="editOrder(${orderIndex})">✏️ 编辑</button>
-                                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;" onclick="deleteOrder(${orderIndex})">🗑️ 删除</button>
-                            </div>
-                        </div>
-                        <div class="order-info">
-                            <div><span>订单号:</span> ${order.customerOrderNo || '-'}</div>
-                            ${order.note ? `<div class="order-note">📝 ${order.note}</div>` : ''}
-                        </div>
-                        <div class="order-images">
-                            <div class="images-label">
-                                <span>📷</span>
-                                <span>商品图片</span>
-                                ${imageCount > 0 ? `<span style="color: #667eea;">(${imageCount}张)</span>` : ''}
-                            </div>
-                            <div class="images-preview">
-                                ${order.images && order.images.length > 0 ? order.images.map(img => `
-                                    <img src="${img}" onclick="openImagePreview('${img}')" alt="商品图片">
-                                `).join('') : '<div style="color: rgba(255,255,255,0.3); font-size: 12px; padding: 10px;">暂无图片</div>'}
-                            </div>
-                        </div>
-                        <div class="order-time">⏰ ${new Date(order.createdAt).toLocaleString('zh-CN')}</div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
+
+        async function deleteOrder(orderId) {
+            if (!confirm('确定要删除该订单吗？')) return;
+            showLoading(true);
+            const res = await client.db.from('orders').delete()
+                .eq('id', orderId);
+            showLoading(false);
+            if (!res.success) { showToast('删除失败', 'error'); return; }
+            showToast('订单已删除');
+            await loadOrders(currentSession.id);
         }
-        
-        let editImages = [];  // 编辑时的图片数组
-        
-        // 编辑订单
-        function editOrder(index) {
-            // 关闭其他模态框
-            closeCameraModal();
-            
-            const order = orders[index];
-            
-            // 保存当前编辑的订单索引
-            document.getElementById('editOrderIndex').value = index;
-            
-            // 填充订单信息
-            document.getElementById('editOrderNo').value = order.customerOrderNo;
+
+        function openEditModal(order) {
+            editingOrderIndex = order.id;
+            document.getElementById('editOrderNo').value = order.order_no;
             document.getElementById('editOrderNote').value = order.note || '';
-            
-            // 保存当前图片
-            editImages = [...(order.images || [])];
-            
-            // 显示已有的图片
-            updateEditImagePreview();
-            
-            // 显示编辑模态框
-            document.getElementById('editOrderModal').style.display = 'flex';
+            editImagesTemp = (order.images && order.images.length > 0) ? [...order.images] : [];
+            renderEditImagePreview();
+            document.getElementById('editOrderModal').classList.add('show');
         }
-        
-        // 更新编辑页面的图片预览
-        function updateEditImagePreview() {
-            let previewHtml = '';
-            editImages.forEach((img, idx) => {
-                previewHtml += `
-                    <div class="preview-item" style="position: relative;">
-                        <img src="${img}" alt="图片${idx + 1}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
-                        <button class="remove-btn" style="position: absolute; top: -5px; right: -5px; width: 22px; height: 22px; border-radius: 50%; border: none; background: #e74c3c; color: white; font-size: 14px; cursor: pointer;" onclick="removeEditImage(${idx})">×</button>
-                    </div>
-                `;
-            });
-            document.getElementById('editImagePreview').innerHTML = previewHtml;
-        }
-        
-        // 删除编辑时的图片
-        function removeEditImage(index) {
-            editImages.splice(index, 1);
-            updateEditImagePreview();
-        }
-        
-        // 关闭编辑模态框
+
         function closeEditModal() {
-            document.getElementById('editOrderModal').style.display = 'none';
-            editImages = [];
+            document.getElementById('editOrderModal').classList.remove('show');
+            editImagesTemp = [];
+            editingOrderIndex = null;
         }
-        
-        // 编辑时拍照
-        function editTakePhoto() {
-            if (cameraStream) {
-                showEditCameraPreview(cameraStream);
-                return;
-            }
-            
-            const constraints = { video: true };
-            navigator.mediaDevices.getUserMedia(constraints)
-                .then(stream => {
-                    cameraStream = stream;
-                    showEditCameraPreview(stream);
-                })
-                .catch(err => {
-                    console.error('拍照失败:', err);
-                    alert('无法访问摄像头，请检查权限设置！');
-                });
-        }
-        
-        // 显示编辑时的摄像头预览
-        function showEditCameraPreview(stream) {
-            // 编辑模态框保持打开，摄像头预览显示在上方
-            const video = document.getElementById('cameraPreview');
-            video.srcObject = stream;
-            document.getElementById('cameraModal').style.display = 'flex';
-            document.getElementById('cameraModal').dataset.mode = 'edit';
-        }
-        
-        // 编辑时从预览拍照
-        function captureEditPhoto() {
-            const video = document.getElementById('cameraPreview');
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            const imageData = canvas.toDataURL('image/jpeg', 0.8);
-            editImages.push(imageData);
-            
-            updateEditImagePreview();
-            closeCameraModal();
-            // 编辑模态框保持打开，不需要重新打开
-        }
-        
-        // 触发编辑时的图片上传
-        function triggerEditImageUpload() {
-            document.getElementById('editImageFile').click();
-        }
-        
-        // 处理编辑时的图片上传
-        function handleEditImageUpload(event) {
-            const files = event.target.files;
-            if (files && files.length > 0) {
-                Array.from(files).forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        editImages.push(e.target.result);
-                        updateEditImagePreview();
-                    };
-                    reader.readAsDataURL(file);
-                });
-            }
-            event.target.value = '';
-        }
-        
-        // 保存编辑后的订单
-        function saveEditOrder() {
-            const index = parseInt(document.getElementById('editOrderIndex').value);
+
+        async function saveEditOrder() {
+            if (!editingOrderIndex) { showToast('数据错误', 'error'); return; }
             const orderNo = document.getElementById('editOrderNo').value.trim();
             const note = document.getElementById('editOrderNote').value.trim();
-            
-            if (!orderNo) {
-                alert('请输入订单号！');
-                return;
-            }
-            
-            // 检查订单号是否与其他订单重复（排除当前编辑的订单）
-            const isDuplicate = orders.some((order, idx) => 
-                idx !== index && order.customerOrderNo === orderNo
-            );
-            
-            if (isDuplicate) {
-                if (!confirm('订单号重复，是否覆盖原有订单？')) {
-                    return;
+            if (!orderNo) { showToast('请输入订单号', 'error'); return; }
+
+            showLoading(true);
+            // 上传新图片
+            let finalImages = [];
+            for (const img of editImagesTemp) {
+                if (img.startsWith('data:')) {
+                    try {
+                        const blob = dataURLtoBlob(img);
+                        const file = new File([blob], 'product.jpg', { type: 'image/jpeg' });
+                        const url = await uploadFile(file);
+                        finalImages.push(url);
+                    } catch (e) {
+                        showToast('图片上传失败', 'error');
+                        showLoading(false);
+                        return;
+                    }
+                } else {
+                    finalImages.push(img);
                 }
-                // 删除重复的订单
-                const duplicateIndex = orders.findIndex(order => order.customerOrderNo === orderNo);
-                if (duplicateIndex !== -1) {
-                    orders.splice(duplicateIndex, 1);
-                }
             }
-            
-            // 更新订单信息 - 保留所有原有字段
-            orders[index] = {
-                id: orders[index].id,  // 保持原ID
-                customerOrderNo: orderNo,
-                note: note,
-                images: [...editImages],
-                createdAt: orders[index].createdAt,  // 保持原创建时间（关键！）
-                updatedAt: new Date().toISOString(),  // 更新修改时间
-                sessionId: orders[index].sessionId,  // 保持原场次ID
-                sessionNo: orders[index].sessionNo  // 保持原场次编号
-            };
-            
-            saveOrders();
-            renderOrders();
+
+            const res = await client.db.from('orders').update()
+                .set({ order_no: orderNo, note: note || '', images: finalImages })
+                .eq('id', editingOrderIndex);
+            showLoading(false);
+
+            if (!res.success) { showToast('保存失败', 'error'); return; }
+            showToast('修改已保存 ✅');
             closeEditModal();
-            
-            alert('订单修改成功！');
+            await loadOrders(currentSession.id);
         }
-        
-        // 拍照功能（优化：添加预览功能）
-        function takePhoto() {
-            // 如果已有摄像头流，直接显示预览
-            if (cameraStream) {
-                showCameraPreview(cameraStream);
-                return;
-            }
-            
-            // 第一次请求摄像头权限
-            const constraints = { video: true };
-            navigator.mediaDevices.getUserMedia(constraints)
-                .then(stream => {
-                    cameraStream = stream;  // 缓存摄像头流
-                    showCameraPreview(stream);
-                })
-                .catch(err => {
-                    console.error('拍照失败:', err);
-                    alert('无法访问摄像头，请检查权限设置！');
-                });
+
+        // ============================================================
+        // 图片处理
+        // ============================================================
+        function dataURLtoBlob(dataurl) {
+            const arr = dataurl.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) { u8arr[n] = bstr.charCodeAt(n); }
+            return new Blob([u8arr], { type: mime });
         }
-        
-        // 显示摄像头预览
-        function showCameraPreview(stream) {
-            const video = document.getElementById('cameraPreview');
-            video.srcObject = stream;
-            document.getElementById('cameraModal').style.display = 'flex';
-            document.getElementById('cameraModal').dataset.mode = 'add';
-        }
-        
-        // 从预览中拍照
-        function captureFromPreview() {
-            const video = document.getElementById('cameraPreview');
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            const imageData = canvas.toDataURL('image/jpeg', 0.8);
-            
-            // 根据模式添加到不同的数组
-            const mode = document.getElementById('cameraModal').dataset.mode || 'add';
-            if (mode === 'edit') {
-                editImages.push(imageData);
-                updateEditImagePreview();
-            } else {
-                editingImages.push(imageData);
-                updateImagePreview();
-            }
-            
-            closeCameraModal();
-        }
-        
-        // 关闭摄像头预览
-        function closeCameraModal() {
-            document.getElementById('cameraModal').style.display = 'none';
-        }
-        
-        // 使用说明模态框
-        function openHelpModal() {
-            document.getElementById('helpModal').style.display = 'flex';
-        }
-        
-        function closeHelpModal() {
-            document.getElementById('helpModal').style.display = 'none';
-        }
-        
-        // 上传图片
+
         function handleImageUpload(event) {
             const files = event.target.files;
             if (!files || files.length === 0) return;
-            
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     editingImages.push(e.target.result);
-                    updateImagePreview();
+                    renderImagePreview();
                 };
                 reader.readAsDataURL(file);
             });
-            
             event.target.value = '';
         }
-        
-        // 更新图片预览
-        function updateImagePreview() {
+
+        function renderImagePreview() {
             let html = '';
             editingImages.forEach((img, index) => {
-                html += `
-                    <div class="preview-item">
-                        <img src="${img}" alt="图片${index + 1}">
-                        <button class="remove-btn" onclick="removeImage(${index})">×</button>
-                    </div>
-                `;
+                html += `<div class="image-preview-item">
+                    <img src="${img}" alt="图片">
+                    <button class="remove-btn" onclick="editingImages.splice(${index},1);renderImagePreview();">×</button>
+                </div>`;
             });
             document.getElementById('imagePreview').innerHTML = html;
         }
-        
-        // 移除图片
-        function removeImage(index) {
-            editingImages.splice(index, 1);
-            updateImagePreview();
+
+        function handleEditImageUpload(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    editImagesTemp.push(e.target.result);
+                    renderEditImagePreview();
+                };
+                reader.readAsDataURL(file);
+            });
+            event.target.value = '';
         }
-        
-        // 图片预览
+
+        function renderEditImagePreview() {
+            let html = '';
+            editImagesTemp.forEach((img, index) => {
+                html += `<div class="image-preview-item">
+                    <img src="${img}" alt="图片">
+                    <button class="remove-btn" onclick="editImagesTemp.splice(${index},1);renderEditImagePreview();">×</button>
+                </div>`;
+            });
+            document.getElementById('editImagePreview').innerHTML = html;
+        }
+
         function openImagePreview(src) {
-            document.getElementById('previewImage').src = src;
-            document.querySelector('.image-preview-modal').classList.add('show');
+            document.getElementById('previewImageFull').src = src;
+            document.getElementById('imagePreviewModal').classList.add('show');
         }
-        
-        function closeImagePreview() {
-            document.querySelector('.image-preview-modal').classList.remove('show');
+
+        // ============================================================
+        // 渲染
+        // ============================================================
+        function updateCurrentSessionDisplay() {
+            if (currentSession) {
+                document.getElementById('currentSessionDisplay').textContent =
+                    `${currentSession.name} (${currentSession.session_no})`;
+                const tag = document.getElementById('sessionStatusTag');
+                if (currentSession.status === 'active') {
+                    tag.textContent = '进行中';
+                    tag.className = 'tag tag-active';
+                    tag.classList.remove('hidden');
+                } else {
+                    tag.textContent = '已结束';
+                    tag.className = 'tag tag-ended';
+                    tag.classList.remove('hidden');
+                }
+            } else {
+                document.getElementById('currentSessionDisplay').textContent = '-';
+                document.getElementById('sessionStatusTag').classList.add('hidden');
+            }
         }
-        
-        // 导出HTML
-        function exportHTML() {
-            if (!currentSession || orders.length === 0) {
-                alert('没有可导出的数据！');
+
+        function renderSessionSelect() {
+            const select = document.getElementById('sessionSelect');
+            select.innerHTML = '<option value="">-- 选择场次查询 --</option>';
+            allSessions.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.id;
+                opt.textContent = `${s.name} (${s.session_no}) ${s.status === 'active' ? '🟢' : '🔴'}`;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderSwitchSelect() {
+            const select = document.getElementById('switchSessionSelect');
+            select.innerHTML = '<option value="">-- 选择场次 --</option>';
+            allSessions.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.id;
+                opt.textContent = `${s.name} (${s.session_no}) ${s.status === 'active' ? '🟢' : '🔴'}`;
+                select.appendChild(opt);
+            });
+        }
+
+        function onSessionSelect() {
+            const select = document.getElementById('sessionSelect');
+            const id = parseInt(select.value);
+            if (!id) { currentSession = null; orders = []; renderOrders(); updateCurrentSessionDisplay(); return; }
+            const session = allSessions.find(s => s.id === id);
+            if (session) {
+                currentSession = session;
+                updateCurrentSessionDisplay();
+                loadOrders(id);
+            }
+        }
+
+        function onSwitchSession() {
+            const select = document.getElementById('switchSessionSelect');
+            const id = parseInt(select.value);
+            if (!id) return;
+            const session = allSessions.find(s => s.id === id);
+            if (session) {
+                currentSession = session;
+                updateCurrentSessionDisplay();
+                loadOrders(id);
+                document.getElementById('sessionSelect').value = id;
+                closeSessionModal();
+                showToast(`已切换到场次: ${session.name}`);
+            }
+        }
+
+        function renderOrders() {
+            const container = document.getElementById('orderList');
+            const countEl = document.getElementById('orderCount');
+            countEl.textContent = `共 ${orders.length} 单`;
+
+            if (!orders || orders.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-500 py-10">暂无订单数据</div>';
                 return;
             }
-            
-            let html = `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日区订单记录 - ${currentSession.sessionNo}</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; max-width: 800px; margin: 0 auto; }
-        h1 { color: #333; text-align: center; }
-        .info { color: #666; text-align: center; margin-bottom: 20px; }
-        .order { border: 1px solid #ddd; padding: 25px; margin-bottom: 25px; border-radius: 12px; }
-        .order-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-        .order-content { flex: 1; }
-        .order-title { font-weight: bold; color: #4CAF50; font-size: 18px; margin-bottom: 8px; }
-        .order-info { color: #333; font-size: 15px; margin-bottom: 12px; }
-        .order-note { color: #f39c12; font-size: 14px; margin-bottom: 12px; }
-        .order-images { margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 10px; }
-        .order-images img { max-width: 300px; max-height: 300px; border-radius: 8px; object-fit: cover; }
-        .order-time { color: #999; font-size: 12px; }
-        .barcode-section { text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px dashed #eee; }
-        .barcode-container { display: inline-block; padding: 15px; background: #fff; border-radius: 10px; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.05); max-width: 100%; overflow-x: auto; }
-        .barcode-label { font-size: 12px; color: #666; margin-top: 8px; }
-    </style>
-</head>
-<body>
-    <h1>日区直播订单记录</h1>
-    <div class="info">场次: ${currentSession.sessionNo} | 主播: ${currentSession.anchor} | 时间: ${currentSession.date} ${currentSession.time}</div>
-    <div style="text-align: center; color: #666; margin-bottom: 20px;">订单总数: ${orders.length}</div>
-    <hr>`;
-            
-            // 使用与页面显示完全相同的排序逻辑
-            const sortedByCreation = [...orders].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-            const sortedOrders = sortedByCreation.reverse(); // 最新的在最前面
-            
-            sortedOrders.forEach((order, reverseIndex) => {
-                // 订单号计算与页面显示一致
-                const orderNumber = sortedByCreation.length - reverseIndex;
-                let barcodeSVG = '';
-                try {
-                    barcodeSVG = generateQRCode(order.customerOrderNo);
-                } catch (e) {
-                    console.error('条形码生成失败:', order.customerOrderNo, e);
-                    barcodeSVG = `<div style="color:#999;font-size:12px;">条形码生成失败</div>`;
-                }
+
+            let html = '';
+            orders.forEach((order, idx) => {
+                const images = order.images || [];
+                const imagesHtml = images.length > 0
+                    ? images.map(img =>
+                        `<img src="${img}" onclick="openImagePreview('${img}')" alt="商品图片">`
+                      ).join('')
+                    : '<span class="text-gray-600 text-sm">无图片</span>';
+
                 html += `
-    <div class="order">
-        <div class="order-content">
-            <div class="order-title">订单 #${orderNumber}</div>
-            <div class="order-info">订单号: ${order.customerOrderNo}</div>
-            ${order.note ? `<div class="order-note">📝 ${order.note}</div>` : ''}
-            ${order.images && order.images.length > 0 ? `<div class="order-images">${order.images.map(img => `<img src="${img}" alt="商品图片">`).join('')}</div>` : ''}
-            <div class="order-time">⏰ ${new Date(order.createdAt).toLocaleString('zh-CN')}</div>
-        </div>
-        <div class="barcode-section">
-            <div class="barcode-container">
-                ${barcodeSVG}
-                <div class="barcode-label">扫码查询</div>
-            </div>
-        </div>
-    </div>`;
+                <div class="order-item">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="text-sm text-gray-400">#${idx + 1}</span>
+                                <span class="text-base font-semibold text-white">${order.order_no || '-'}</span>
+                            </div>
+                            ${order.note ? `<div class="text-sm text-gray-400 mb-2">📝 ${order.note}</div>` : ''}
+                            <div class="order-images">${imagesHtml}</div>
+                            <div class="text-xs text-gray-600 mt-2">
+                                ⏰ ${order.created_at ? new Date(order.created_at).toLocaleString('zh-CN') : '-'}
+                            </div>
+                        </div>
+                        <div class="flex gap-2 flex-shrink-0">
+                            <button class="btn btn-primary text-sm py-2 px-3" onclick='openEditModal(${JSON.stringify(order).replace(/'/g,"&#39;")})'>✏️ 编辑</button>
+                            <button class="btn btn-danger text-sm py-2 px-3" onclick="deleteOrder(${order.id})">🗑️ 删除</button>
+                        </div>
+                    </div>
+                </div>`;
             });
-            
-            html += `</body></html>`;
-            
-            const blob = new Blob([html], { type: 'text/html' });
+            container.innerHTML = html;
+        }
+
+        function updateStats() {
+            document.getElementById('statSessions').textContent = allSessions.length;
+            const total = allSessions.reduce((sum, s) => sum + 1, 0);
+            // Count orders from current view
+            document.getElementById('statOrders').textContent = orders.length;
+        }
+
+        // ============================================================
+        // 导出 HTML
+        // ============================================================
+        async function exportHTML() {
+            if (!currentSession || orders.length === 0) {
+                showToast('当前场次没有订单可导出', 'warning');
+                return;
+            }
+
+            let tableRows = '';
+            orders.forEach((order, idx) => {
+                tableRows += `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${order.order_no || '-'}</td>
+                    <td>${order.note || '-'}</td>
+                    <td>${order.created_at ? new Date(order.created_at).toLocaleString('zh-CN') : '-'}</td>
+                </tr>`;
+            });
+
+            const exportHtml = `<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<title>${currentSession.name} - 订单导出</title>
+<style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}
+th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f5f5f5;}
+h1{font-size:20px;}h2{font-size:16px;color:#666;}</style></head><body>
+<h1>📦 ${currentSession.name}</h1>
+<h2>场次编号: ${currentSession.session_no} | 日期: ${currentSession.session_date} | 导出时间: ${new Date().toLocaleString('zh-CN')}</h2>
+<p>共 ${orders.length} 单</p>
+<table><thead><tr><th>#</th><th>订单号</th><th>备注</th><th>时间</th></tr></thead>
+<tbody>${tableRows}</tbody></table></body></html>`;
+
+            const blob = new Blob([exportHtml], { type: 'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `日区订单_${currentSession.sessionNo}_${new Date().getTime()}.html`;
+            a.download = `${currentSession.session_no}_订单导出.html`;
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
             URL.revokeObjectURL(url);
-        }
-        
-        // 生成Code 128条形码SVG
-        function generateQRCode(text) {
-            return code128(text);
-        }
-        
-        // Code 128条形码核心实现
-        // 值 0-102: 数据字符, 103: Start A, 104: Start B, 105: Start C
-        const CODE128_PATTERNS = [
-            '212222','222122','222221','121223','121322','131222','122213','122312','132212','221213',
-            '221312','231212','112232','122132','122231','113222','123122','123221','223211','221132',
-            '221231','213212','223112','312131','311222','321122','321221','312212','322112','322211',
-            '212123','212321','232121','111323','131123','131321','112313','132113','132311','211313',
-            '231113','231311','112133','112331','132131','113123','113321','133121','313121','211331',
-            '231131','213113','213311','213131','311123','311321','331121','312113','312311','332111',
-            '314111','221411','431111','111224','111422','121124','121421','141122','141221','112214',
-            '112412','122114','122411','142112','142211','241211','221114','413111','241112','134111',
-            '111242','121142','121241','114212','124112','124211','411212','421112','421211','212141',
-            '214121','412121','111143','111341','131141','114113','114311','411113','411311','113141',
-            '114131','311141','411131',
-            '211412','211214','211232' // Start A (103), Start B (104), Start C (105)
-        ];
-        const CODE128_STOP = '2331112';
-        
-        function code128(text) {
-            // 使用Code 128 B模式，支持任意ASCII字符，无需补0
-            const values = encodeCode128B(text);
-            return renderCode128(values, text);
+            showToast('导出成功 ✅');
         }
 
-        function encodeCode128B(text) {
-            const values = [];
-            // Start B = 104
-            values.push(104);
+        // ============================================================
+        // 模态框
+        // ============================================================
+        function openSessionModal() {
+            document.getElementById('sessionModal').classList.add('show');
+            // Set default date
+            const today = new Date().toISOString().slice(0, 10);
+            document.getElementById('sessionDate').value = today;
+            renderSwitchSelect();
+        }
+        function closeSessionModal() {
+            document.getElementById('sessionModal').classList.remove('show');
+        }
 
-            // 每个字符按ASCII编码：值 = ASCII - 32
-            for (let i = 0; i < text.length; i++) {
-                const charCode = text.charCodeAt(i);
-                // Code 128 B 支持 ASCII 32-127
-                if (charCode >= 32 && charCode <= 127) {
-                    values.push(charCode - 32);
-                } else {
-                    // 对于不可打印字符，用空格代替（值0）
-                    values.push(0);
-                }
-            }
-
-            // 计算校验和
-            let checksum = values[0]; // Start B = 104
-            for (let i = 1; i < values.length; i++) {
-                checksum += i * values[i];
-            }
-            checksum = checksum % 103;
-            values.push(checksum);
-
-            return values;
-        }
-        
-        function renderCode128(values, originalText) {
-            const moduleWidth = 2; // 每个模块的宽度（像素）
-            const barHeight = 50;  // 条形码高度
-            const quietZone = 10;  // 安静区宽度
-            
-            // 计算总宽度
-            let totalWidth = quietZone * 2; // 左右安静区
-            const charModules = 11; // 每个字符11个模块
-            const stopModules = 13; // 停止符13个模块
-            
-            // 数据字符宽度
-            totalWidth += (values.length - 1) * charModules * moduleWidth; // 减去校验字符，后面单独加
-            // 校验字符宽度
-            totalWidth += charModules * moduleWidth;
-            // 停止符宽度
-            totalWidth += stopModules * moduleWidth;
-            
-            let svgContent = `<svg width="${totalWidth}" height="${barHeight + 20}" viewBox="0 0 ${totalWidth} ${barHeight + 20}" xmlns="http://www.w3.org/2000/svg" style="display: block; margin: 0 auto;">`;
-            svgContent += `<rect width="${totalWidth}" height="${barHeight + 20}" fill="#fff"/>`;
-            
-            let x = quietZone;
-            for (let i = 0; i < values.length; i++) {
-                const pattern = CODE128_PATTERNS[values[i]];
-                for (let j = 0; j < pattern.length; j++) {
-                    const width = parseInt(pattern[j]) * moduleWidth;
-                    if (j % 2 === 0) {
-                        // 条（黑色）
-                        svgContent += `<rect x="${x}" y="0" width="${width}" height="${barHeight}" fill="#000"/>`;
-                    }
-                    x += width;
-                }
-            }
-            
-            // 绘制停止符
-            for (let j = 0; j < CODE128_STOP.length; j++) {
-                const width = parseInt(CODE128_STOP[j]) * moduleWidth;
-                if (j % 2 === 0) {
-                    svgContent += `<rect x="${x}" y="0" width="${width}" height="${barHeight}" fill="#000"/>`;
-                }
-                x += width;
-            }
-            
-            // 添加文本
-            svgContent += `<text x="${totalWidth / 2}" y="${barHeight + 15}" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">${originalText}</text>`;
-            svgContent += '</svg>';
-            
-            return svgContent;
-        }
-        
-        // 数据持久化
-        function saveOrders() {
-            // 保存所有场次的订单，而不是只保存当前场次
-            const saved = localStorage.getItem('jpOrders');
-            let allOrders = [];
-            if (saved) {
-                allOrders = JSON.parse(saved);
-            }
-            
-            // 更新或添加当前场次的订单
-            orders.forEach(order => {
-                const index = allOrders.findIndex(o => o.id === order.id);
-                if (index >= 0) {
-                    allOrders[index] = order;
-                } else {
-                    allOrders.push(order);
-                }
-            });
-            
-            localStorage.setItem('jpOrders', JSON.stringify(allOrders));
-        }
-        
-        function loadOrders() {
-            const saved = localStorage.getItem('jpOrders');
-            if (saved) {
-                orders = JSON.parse(saved);
-            }
-        }
-        
-        function loadOrdersForSession() {
-            if (!currentSession) {
-                orders = [];
-                renderOrders();
-                return;
-            }
-            
-            const saved = localStorage.getItem('jpOrders');
-            if (saved) {
-                const allOrders = JSON.parse(saved);
-                orders = allOrders.filter(o => o.sessionId === currentSession.id);
-            } else {
-                orders = [];
-            }
-            renderOrders();
-        }
-        
-        function saveSessions() {
-            localStorage.setItem('jpSessions', JSON.stringify(dailySessions));
-        }
-        
-        function loadSessions() {
-            const saved = localStorage.getItem('jpSessions');
-            if (saved) {
-                dailySessions = JSON.parse(saved);
-            }
-        }
-        
-        function updateSessionSelect() {
-            const select = document.getElementById('sessionSelect');
-            select.innerHTML = '<option value="">选择场次查询</option>';
-            
-            dailySessions.forEach(session => {
-                const option = document.createElement('option');
-                option.value = session.id;
-                option.textContent = `${session.sessionNo} | ${session.anchor} | ${session.date}`;
-                select.appendChild(option);
-            });
-        }
-        
+        // ============================================================
         // 初始化
+        // ============================================================
+        async function init() {
+            showLoading(true);
+            try {
+                await loadSessions();
+                // 如果有进行中的场次，自动选中第一个 active 的
+                const active = allSessions.find(s => s.status === 'active');
+                if (active) {
+                    currentSession = active;
+                    updateCurrentSessionDisplay();
+                    await loadOrders(active.id);
+                } else if (allSessions.length > 0) {
+                    currentSession = allSessions[0];
+                    updateCurrentSessionDisplay();
+                    await loadOrders(currentSession.id);
+                }
+            } catch (e) {
+                showToast('加载数据失败: ' + e.message, 'error');
+            }
+            showLoading(false);
+        }
+
+        // 页面关闭时不用特别操作，数据已存云端
         init();
-        
-        // 点击模态框外部关闭
-        document.getElementById('sessionModal').addEventListener('click', function(e) {
-            if (e.target === this) closeSessionModal();
-        });
     </script>
 </body>
 </html>
