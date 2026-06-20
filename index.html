@@ -311,8 +311,11 @@
         </div>
     </div>
 
-    <!-- Help Modal -->
-    <div id="helpModal" class="modal-overlay">
+    <!-- Image Preview Modal -->
+    <div id="imagePreviewModal" class="image-preview-modal" onclick="this.classList.remove('show')">
+        <img id="previewImageFull" src="" alt="预览">
+    </div>
+        <div id="helpModal" class="modal-overlay">
         <div style="max-width:700px;width:100%;position:relative;">
             <button onclick="closeHelpModal()" class="modal-close">×</button>
             <div style="background:#1e293b;border-radius:20px;padding:30px;border:1px solid rgba(148,163,184,0.15);max-height:85vh;overflow-y:auto;">
@@ -378,11 +381,7 @@
             </div>
         </div>
     </div>
-
-    <!-- Image Preview Modal -->
-    <div id="imagePreviewModal" class="image-preview-modal" onclick="this.classList.remove('show')">
-        <img id="previewImageFull" src="" alt="预览">
-    </div>
+        
 
     <!-- Loading -->
     <div id="loadingOverlay" class="loading-overlay">
@@ -576,11 +575,11 @@
             allSessions.forEach(s => {
                 const opt1 = document.createElement('option');
                 opt1.value = s.id;
-                opt1.textContent = `${s.name} (${s.session_no})`;
+                opt1.textContent = `${s.session_no} | ${s.anchor || '-'} | ${s.session_date}`;
                 sel.appendChild(opt1);
                 const opt2 = document.createElement('option');
                 opt2.value = s.id;
-                opt2.textContent = `${s.name} (${s.session_no})`;
+                opt2.textContent = `${s.session_no} | ${s.anchor || '-'} | ${s.session_date}`;
                 querySel.appendChild(opt2);
             });
         }
@@ -811,9 +810,9 @@
                 const imgs = (o.images || []).filter(img => getImgUrl(img)).map(img => `<img src="${getImgUrl(img)}" style="max-width:100px;max-height:100px;margin:2px;border-radius:4px;cursor:pointer;" onclick="openImg(this.src)">`).join('') || '无';
                 rows += `<tr><td>${i+1}</td><td>${o.order_no||'-'}</td><td>${o.note||'-'}</td><td>${imgs}</td><td>${o.created_at?new Date(o.created_at).toLocaleString('zh-CN'):'-'}</td></tr>`;
             });
-            const html = \`<!DOCTYPE html>
+            const html = `<!DOCTYPE html>
 <html lang="zh-CN">
-<head><meta charset="UTF-8"><title>\${currentSession.name} - 订单导出</title>
+<head><meta charset="UTF-8"><title>${'$'}{currentSession.name} - 订单导出</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:sans-serif;padding:20px;background:#f5f5f5;color:#333;}
@@ -832,15 +831,14 @@ img:hover{transform:scale(1.1);}
 </head>
 <body>
 <div id="lightbox" onclick="this.classList.remove('show')"><img id="lbImg" src=""></div>
-<h1>📦 \${currentSession.name}</h1>
-<p class="info">场次: \${currentSession.session_no} | 日期: \${currentSession.session_date} | 共 \${orders.length} 单 | 导出: \${new Date().toLocaleString('zh-CN')}</p>
+<h1>${'$'}{currentSession.name}</h1>
+<p class="info">场次: ${'$'}{currentSession.session_no} | 日期: ${'$'}{currentSession.session_date} | 共 ${'$'}{orders.length} 单 | 导出: ${'$'}{new Date().toLocaleString('zh-CN')}</p>
 <table><thead><tr><th>#</th><th>订单号</th><th>备注</th><th>商品图片</th><th>时间</th></tr></thead>
-<tbody>\${rows}</tbody></table>
-<p class="foot">* 图片为网络链接，点击可放大查看</p>
-<\script>
-function openImg(src){document.getElementById('lbImg').src=src;document.getElementById('lightbox').classList.add('show');}
-<\/script>
-<\/body><\/html>\`;
+<tbody>${'$'}{rows}</tbody></table>
+<p class="foot">* 图片为网络链接，点击可放大查看</p>` + '<' + 'script>
+function openImg(src){document.getElementById("lbImg").src=src;document.getElementById("lightbox").classList.add("show");}
+<' + '/' + 'script>
+<' + '/' + 'body><' + '/' + 'html>';
             const blob = new Blob([html], { type:'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
