@@ -191,6 +191,7 @@
                 <label>商品图片</label>
                 <div class="flex gap-3 items-start flex-wrap">
                     <button class="btn btn-primary" onclick="document.getElementById('imageFile').click()">📁 上传图片</button>
+                    <button class="btn btn-success" onclick="takePhoto()">📷 拍照</button>
                     <input type="file" id="imageFile" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)">
                     <button class="btn btn-success" onclick="saveOrder()">💾 保存订单</button>
                     <button class="btn btn-primary" onclick="saveOrderAndNext()">➡️ 下一个订单</button>
@@ -261,11 +262,27 @@
                     <label>商品图片</label>
                     <div class="flex gap-3 items-center">
                         <button class="btn btn-primary" onclick="document.getElementById('editImageFile').click()">📁 上传图片</button>
+                        <button class="btn btn-success" onclick="takePhoto('edit')">📷 拍照</button>
                         <input type="file" id="editImageFile" accept="image/*" multiple class="hidden" onchange="handleEditImageUpload(event)">
                     </div>
                     <div id="editImagePreview" class="image-preview-container"></div>
                 </div>
                 <button class="btn btn-success w-full justify-center" onclick="saveEditOrder()">💾 保存修改</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Modal -->
+    <div id="cameraModal" class="modal-overlay">
+        <div class="relative" style="max-width:700px;width:100%;">
+            <button onclick="closeCameraModal()" class="modal-close">&times;</button>
+            <div class="bg-white rounded-2xl p-6 shadow-2xl">
+                <h3 class="text-xl font-bold text-gray-900 mb-4 text-center">📷 拍照预览</h3>
+                <video id="cameraPreview" class="w-full rounded-xl bg-black" style="max-width:640px;margin:0 auto;display:block;" autoplay playsinline></video>
+                <div class="flex justify-center mt-4 gap-3">
+                    <button onclick="captureFromPreview()" class="btn btn-success px-8">📸 拍照</button>
+                    <button onclick="closeCameraModal()" class="btn btn-secondary">取消</button>
+                </div>
             </div>
         </div>
     </div>
@@ -320,6 +337,59 @@
 
         function showLoading(show) {
             document.getElementById('loadingOverlay').classList.toggle('show', show);
+        }
+
+        // ============================================================
+        // 摄像头（首次授权后缓存流，后续不再重复请求）
+        // ============================================================
+        let cameraStream = null;
+
+        // 拍照模式：'add'=新增订单，'edit'=编辑订单
+        let cameraMode = 'add';
+
+        function takePhoto(mode) {
+            cameraMode = mode || 'add';
+            if (cameraStream) {
+                showCameraPreview(cameraStream);
+                return;
+            }
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    cameraStream = stream;
+                    showCameraPreview(stream);
+                })
+                .catch(err => {
+                    console.error('拍照失败:', err);
+                    showToast('无法访问摄像头，请检查权限设置！', 'error');
+                });
+        }
+
+        function showCameraPreview(stream) {
+            const video = document.getElementById('cameraPreview');
+            video.srcObject = stream;
+            document.getElementById('cameraModal').classList.add('show');
+        }
+
+        function captureFromPreview() {
+            const video = document.getElementById('cameraPreview');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/jpeg', 0.8);
+            if (cameraMode === 'edit') {
+                editImagesTemp.push(imageData);
+                renderEditImagePreview();
+            } else {
+                editingImages.push(imageData);
+                renderImagePreview();
+            }
+            closeCameraModal();
+        }
+
+        function closeCameraModal() {
+            document.getElementById('cameraModal').classList.remove('show');
         }
 
         // ============================================================
