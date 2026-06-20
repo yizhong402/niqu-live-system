@@ -311,6 +311,74 @@
         </div>
     </div>
 
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal-overlay">
+        <div style="max-width:700px;width:100%;position:relative;">
+            <button onclick="closeHelpModal()" class="modal-close">×</button>
+            <div style="background:#1e293b;border-radius:20px;padding:30px;border:1px solid rgba(148,163,184,0.15);max-height:85vh;overflow-y:auto;">
+                <h3 style="color:#fff;font-size:20px;font-weight:700;margin-bottom:6px;text-align:center;">❓ 使用说明</h3>
+                <p style="color:#64748b;font-size:13px;text-align:center;margin-bottom:24px;">日区直播订单管理系统 · 云数据库版</p>
+
+                <div style="margin-bottom:20px;">
+                    <h4 style="color:#60a5fa;font-size:15px;font-weight:600;margin-bottom:10px;">📅 一、场次管理</h4>
+                    <div style="background:#0f172a;border-radius:10px;padding:14px 16px;font-size:13px;color:#cbd5e1;line-height:1.8;">
+                        <li><strong style="color:#e2e8f0;">创建场次</strong>：点击"创建/更换场次" → 输入场次名称、日期 → 点击"创建场次"。创建后自动进入该场次。</li>
+                        <li><strong style="color:#e2e8f0;">切换场次</strong>：同样点击"创建/更换场次" → 在下方"切换已有场次"选择你要的场次。</li>
+                        <li><strong style="color:#e2e8f0;">结束场次</strong>：点击"直播结束"可将当前场次标记为已结束，订单数据保留。</li>
+                        <li><strong style="color:#e2e8f0;">删除场次</strong>：⚠️ 删除当前场次及其<strong style="color:#ef4444;">所有订单</strong>，不可恢复。</li>
+                        <li><strong style="color:#e2e8f0;">查询场次</strong>：顶部右侧下拉选择场次 → 点击"查询订单"。</li>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <h4 style="color:#60a5fa;font-size:15px;font-weight:600;margin-bottom:10px;">➕ 二、订单录入</h4>
+                    <div style="background:#0f172a;border-radius:10px;padding:14px 16px;font-size:13px;color:#cbd5e1;line-height:1.8;">
+                        <li><strong style="color:#e2e8f0;">订单号</strong>：必填，输入客户订单号（字母、数字均可）。</li>
+                        <li><strong style="color:#e2e8f0;">备注信息</strong>：选填，记录额外信息（客户备注、特殊要求等）。</li>
+                        <li><strong style="color:#e2e8f0;">拍照</strong>：📷 点击"拍照"按钮 → 第一次使用需授权摄像头 → 首次授权后同场次内无需重复授权 → 调整角度点击"拍照"即可。</li>
+                        <li><strong style="color:#e2e8f0;">上传图片</strong>：🖼️ 点击"上传图片"从本地选择照片，支持多张同时上传。</li>
+                        <li><strong style="color:#e2e8f0;">保存订单</strong>：点击"保存订单"将当前订单存入云端数据库。</li>
+                        <li><strong style="color:#e2e8f0;">下一个订单</strong>：保存当前订单并自动清空表单，方便快速连续录入。</li>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <h4 style="color:#60a5fa;font-size:15px;font-weight:600;margin-bottom:10px;">📋 三、订单管理</h4>
+                    <div style="background:#0f172a;border-radius:10px;padding:14px 16px;font-size:13px;color:#cbd5e1;line-height:1.8;">
+                        <li><strong style="color:#e2e8f0;">编辑</strong>：点击订单右侧"编辑"按钮可修改订单号、备注、图片。</li>
+                        <li><strong style="color:#e2e8f0;">删除</strong>：点击"删除"移除单个订单。</li>
+                        <li><strong style="color:#e2e8f0;">清空订单</strong>：清空当前场次的所有订单，保留场次信息。</li>
+                        <li><strong style="color:#e2e8f0;">图片预览</strong>：点击订单中的缩略图可放大查看原图。</li>
+                        <li><strong style="color:#e2e8f0;">订单排序</strong>：最新保存的订单排在列表最上面。</li>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <h4 style="color:#60a5fa;font-size:15px;font-weight:600;margin-bottom:10px;">🌐 四、数据导出</h4>
+                    <div style="background:#0f172a;border-radius:10px;padding:14px 16px;font-size:13px;color:#cbd5e1;line-height:1.8;">
+                        <li><strong style="color:#e2e8f0;">HTML导出</strong>：导出当前场次订单为HTML文件，包含商品图片（网络链接，需联网查看）。</li>
+                        <li><strong style="color:#e2e8f0;">点击放大</strong>：导出的HTML中点击图片可弹出大图预览。</li>
+                        <li>建议定期导出备份订单数据。</li>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <h4 style="color:#60a5fa;font-size:15px;font-weight:600;margin-bottom:10px;">☁️ 五、数据安全</h4>
+                    <div style="background:#0f172a;border-radius:10px;padding:14px 16px;font-size:13px;color:#cbd5e1;line-height:1.8;">
+                        <li><strong style="color:#e2e8f0;">云端存储</strong>：所有订单数据和图片存储在云端数据库和对象存储，<strong style="color:#10b981;">不会丢失</strong>。</li>
+                        <li><strong style="color:#e2e8f0;">多设备同步</strong>：任意设备浏览器打开同一链接，数据一致。</li>
+                        <li><strong style="color:#e2e8f0;">无需手动保存</strong>：每条订单保存后即时写入云端。</li>
+                        <li>⚠️ 清缓存、换设备、重装浏览器均不影响数据安全。</li>
+                    </div>
+                </div>
+
+                <div style="text-align:center;margin-top:20px;">
+                    <button class="btn btn-primary" onclick="closeHelpModal()" style="padding:10px 40px;">我知道了</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Image Preview Modal -->
     <div id="imagePreviewModal" class="image-preview-modal" onclick="this.classList.remove('show')">
         <img id="previewImageFull" src="" alt="预览">
@@ -786,7 +854,10 @@ function openImg(src){document.getElementById('lbImg').src=src;document.getEleme
         // Help
         // ============================================================
         function openHelp() {
-            showToast('点击"创建/更换场次"开始使用，场次内录入订单，数据自动保存到云端', 'info');
+            document.getElementById('helpModal').classList.add('show');
+        }
+        function closeHelpModal() {
+            document.getElementById('helpModal').classList.remove('show');
         }
 
         // ============================================================
