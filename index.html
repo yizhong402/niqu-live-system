@@ -574,7 +574,7 @@
             if (!sessionId) { orders = []; renderOrders(); return; }
             const res = await client.db.from('orders').list()
                 .eq('session_id', sessionId)
-                .order('created_at', 'desc');
+                .order('created_at', 'asc');
             if (res.success) { orders = res.data || []; } else { orders = []; }
             renderOrders();
         }
@@ -593,7 +593,7 @@
                 sel.appendChild(opt1);
                 const opt2 = document.createElement('option');
                 opt2.value = s.id;
-                opt2.textContent = `${s.name} (${s.session_no})`;
+                opt2.textContent = `${s.name} (${s.session_no}) | ${s.session_date}${s.session_time ? ' '+s.session_time : ''} | 主播:${s.anchor || '-'}`;
                 querySel.appendChild(opt2);
             });
         }
@@ -821,15 +821,19 @@
         // ============================================================
         async function exportHTML() {
             if (!currentSession || orders.length === 0) { showToast('当前场次没有订单可导出','warning'); return; }
+            const s = currentSession;
             const getImgUrl = (img) => typeof img === 'string' ? img : (img.url || '');
             let rows = '';
             orders.forEach((o,i) => {
-                const imgs = (o.images || []).filter(img => getImgUrl(img)).map(img => `<img src="${getImgUrl(img)}" style="max-width:100px;max-height:100px;margin:2px;border-radius:4px;cursor:pointer;" onclick="openImg(this.src)">`).join('') || '无';
-                rows += `<tr><td>${i+1}</td><td>${o.order_no||'-'}</td><td>${o.note||'-'}</td><td>${imgs}</td><td>${o.created_at?new Date(o.created_at).toLocaleString('zh-CN'):'-'}</td></tr>`;
+                const imgs = (o.images || []).filter(img => getImgUrl(img)).map(img => `<img src="${getImgUrl(img)}" style="width:64px;height:64px;margin:2px;border-radius:6px;cursor:pointer;object-fit:cover;border:1px solid #e5e7eb;" onclick="openImg(this.src)">`).join('') || '—';
+                const t = o.created_at ? new Date(o.created_at).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '-';
+                rows += `<tr><td class="num">${i+1}</td><td>${o.order_no||'-'}</td><td>${o.note||'—'}</td><td>${imgs}</td><td class="time">${t}</td></tr>`;
             });
             var sc = '<' + 'script>';
             var ec = '<' + '/' + 'script>';
-            var html = '<!DOCTYPE html>' + '<html lang="zh-CN"><head><meta charset="UTF-8"><title>' + currentSession.name + ' - 订单导出</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:sans-serif;padding:20px;background:#f5f5f5;color:#333;}h1{font-size:22px;margin-bottom:6px;}.info{color:#666;font-size:14px;margin-bottom:20px;}table{width:100%;border-collapse:collapse;background:white;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);}th,td{border:1px solid #e0e0e0;padding:10px 12px;text-align:left;font-size:14px;}th{background:#f0f0f0;font-weight:600;color:#555;}img{vertical-align:middle;cursor:pointer;transition:transform 0.2s;}img:hover{transform:scale(1.1);}.foot{color:#999;font-size:12px;margin-top:12px;}#lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;justify-content:center;align-items:center;cursor:pointer;}#lightbox.show{display:flex;}#lightbox img{max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,0.5);}</style></head><body><div id="lightbox" onclick="this.classList.remove(\'show\')"><img id="lbImg" src=""></div><h1>' + currentSession.name + '</h1><p class="info">场次: ' + currentSession.session_no + ' | 日期: ' + currentSession.session_date + ' | 共 ' + orders.length + ' 单 | 导出: ' + new Date().toLocaleString('zh-CN') + '</p><table><thead><tr><th>#</th><th>订单号</th><th>备注</th><th>商品图片</th><th>时间</th></tr></thead><tbody>' + rows + '</tbody></table><p class="foot">* 图片为网络链接，点击可放大查看</p>' + sc + 'function openImg(src){document.getElementById("lbImg").src=src;document.getElementById("lightbox").classList.add("show");}' + ec + '</body></html>';
+            var timeRange = s.session_time ? '<span class="tag">⏰ ' + s.session_time + '</span>' : '';
+            var anchorInfo = s.anchor ? '<span class="tag">🎤 ' + s.anchor + '</span>' : '';
+            var html = '<!DOCTYPE html>' + '<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>' + s.name + ' - 订单导出</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans SC",sans-serif;padding:32px 24px;background:linear-gradient(135deg,#f8fafc 0%,#eef2f7 100%);color:#1e293b;min-height:100vh;}.header-card{background:white;border-radius:16px;padding:28px 32px;margin-bottom:24px;box-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.04);}.header-card h1{font-size:24px;font-weight:700;color:#0f172a;margin-bottom:8px;}.meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:#475569;margin-bottom:8px;}.meta .tag{display:inline-block;padding:3px 10px;background:#f1f5f9;border-radius:20px;font-size:12px;color:#334155;font-weight:500;}.divider{width:100%;height:1px;background:#e2e8f0;margin:10px 0;}.footer-meta{display:flex;justify-content:space-between;font-size:12px;color:#94a3b8;margin-top:8px;}.card-body{background:white;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.04);}.table-wrap{overflow-x:auto;}table{width:100%;border-collapse:collapse;font-size:14px;}thead{background:#f8fafc;}th{padding:14px 16px;text-align:left;font-weight:600;font-size:13px;color:#475569;text-transform:uppercase;letter-spacing:0.04em;border-bottom:2px solid #e2e8f0;}td{padding:14px 16px;border-bottom:1px solid #f1f5f9;color:#334155;vertical-align:middle;}tr:last-child td{border-bottom:none;}tr:hover td{background:#f8fafc;}td.num{font-weight:700;color:#6366f1;width:48px;text-align:center;}td.time{white-space:nowrap;color:#64748b;font-size:13px;}img{vertical-align:middle;transition:transform 0.2s;}img:hover{transform:scale(1.15);}.foot{text-align:center;color:#94a3b8;font-size:12px;padding:20px 0 8px;}#lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.92);z-index:9999;justify-content:center;align-items:center;cursor:pointer;backdrop-filter:blur(4px);}#lightbox.show{display:flex;}#lightbox img{max-width:90vw;max-height:90vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.5);}</style></head><body><div id="lightbox" onclick="this.classList.remove(\'show\')"><img id="lbImg" src=""></div><div class="header-card"><h1>📦 ' + s.name + '</h1><div class="meta"><span class="tag">🏷️ ' + s.session_no + '</span><span class="tag">📅 ' + s.session_date + '</span>' + timeRange + anchorInfo + '</div><div class="divider"></div><div class="footer-meta"><span>📊 共 <strong>' + orders.length + '</strong> 单</span><span>📎 导出时间: ' + new Date().toLocaleString('zh-CN') + '</span></div></div><div class="card-body"><div class="table-wrap"><table><thead><tr><th>#</th><th>订单号</th><th>备注</th><th>商品图片</th><th>时间</th></tr></thead><tbody>' + rows + '</tbody></table></div></div><p class="foot">* 图片为网络链接，点击可放大查看</p>' + sc + 'function openImg(src){document.getElementById("lbImg").src=src;document.getElementById("lightbox").classList.add("show");}' + ec + '</body></html>';
             const blob = new Blob([html], { type:'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
