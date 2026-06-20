@@ -251,8 +251,12 @@
                     <input type="date" id="sessionDate" class="input-field" required>
                 </div>
                 <div>
-                    <label>直播时间</label>
-                    <input type="text" id="sessionTime" class="input-field" placeholder="例如: 19:00-22:00">
+                    <label>开始时间</label>
+                    <input type="time" id="sessionTimeStart" class="input-field" value="19:00">
+                </div>
+                <div>
+                    <label>结束时间</label>
+                    <input type="time" id="sessionTimeEnd" class="input-field" value="22:00">
                 </div>
                 <div>
                     <label>主播信息</label>
@@ -575,7 +579,7 @@
             allSessions.forEach(s => {
                 const opt1 = document.createElement('option');
                 opt1.value = s.id;
-                opt1.textContent = `${s.session_no} | ${s.anchor || '-'} | ${s.session_date}`;
+                opt1.textContent = `${s.name} (${s.session_no})`;
                 sel.appendChild(opt1);
                 const opt2 = document.createElement('option');
                 opt2.value = s.id;
@@ -621,7 +625,7 @@
                 <div class="order-item">
                     <div class="order-header">
                         <div class="order-header-left">
-                            <span style="color:#94a3b8;font-size:13px;">订单 #${idx + 1}</span>
+                            <span style="color:#94a3b8;font-size:13px;">订单 #${orders.length - idx}</span>
                             <span class="order-badge">${order.order_no || '-'}</span>
                         </div>
                         <div class="order-actions">
@@ -658,7 +662,9 @@
         async function createSession() {
             const name = document.getElementById('sessionName').value.trim();
             const date = document.getElementById('sessionDate').value;
-            const time = document.getElementById('sessionTime').value.trim();
+            const timeStart = document.getElementById('sessionTimeStart').value;
+            const timeEnd = document.getElementById('sessionTimeEnd').value;
+            const time = timeStart && timeEnd ? timeStart + '-' + timeEnd : '';
             const anchor = document.getElementById('sessionAnchor').value.trim();
             if (!name) { showToast('请输入场次名称', 'error'); return; }
             if (!date) { showToast('请选择直播日期', 'error'); return; }
@@ -675,7 +681,8 @@
             updateStatusBar(currentSession);
             document.getElementById('sessionName').value = '';
             document.getElementById('sessionDate').value = '';
-            document.getElementById('sessionTime').value = '';
+            document.getElementById('sessionTimeStart').value = '19:00';
+            document.getElementById('sessionTimeEnd').value = '22:00';
             document.getElementById('sessionAnchor').value = '';
         }
 
